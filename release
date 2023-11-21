@@ -1,2 +1,0 @@
-#!/bin/bash
-./gradlew clean bootJar -Pprofile=prod && java -jar -Dspring.profiles.active=prod ./build/libs/*.jar
