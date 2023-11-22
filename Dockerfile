@@ -1,0 +1,14 @@
+FROM amazoncorretto:17
+MAINTAINER Choi, Jisu <redgem92@gmail.com>
+
+ARG JAR_FILE=build/libs/app.jar
+
+COPY ${JAR_FILE} app.jar
+
+ENV CLOUD_ACCESS_KEY=${CLOUD_ACCESS_KEY}
+ENV CLOUD_SECRET_KEY=${CLOUD_SECRET_KEY}
+ENV STORAGE_END_POINT=${STORAGE_END_POINT}
+ENV STORAGE_REGION=${STORAGE_REGION}
+ENV STORAGE_BUCKET_NAME=${STORAGE_BUCKET_NAME}
+
+ENTRYPOINT ["java","-jar", "-Dspring.profiles.active=prod", "/app.jar"]
