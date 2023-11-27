@@ -46,7 +46,6 @@ jobs:
       - name: Build
         run: ./gradlew build -x test -Pprofile=prod
 
-
       - name: Send slack if failed
         if: ${{ failure() }}
         uses: 8398a7/action-slack@v3
@@ -84,6 +83,8 @@ jobs:
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
+        with:
+          mask-password: true
 
       - name: Build Image and Push Image to Amazon ECR
         env:
