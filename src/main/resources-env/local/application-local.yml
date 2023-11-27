@@ -28,10 +28,6 @@ logging:
       hibernate:
         type: trace
 
-redis:
-  session:
-    host: ${REDIS_HOST:localhost}
-    port: ${REDIS_PORT:6379}
 
 cloud:
   credentials:
