@@ -19,7 +19,7 @@ spring:
         use_sql_comments: true
   session:
     store-type: redis
-    timeout: 1209600
+    timeout: ${SESSION_TIMEOUT}
 
 redis:
   session:
