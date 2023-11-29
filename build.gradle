@@ -1,3 +1,5 @@
+import static org.gradle.api.file.DuplicatesStrategy.*
+
 plugins {
 	id 'java'
 	id 'org.springframework.boot' version '2.6.15'
@@ -78,6 +80,8 @@ dependencies {
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
 	runtimeOnly 'com.h2database:h2'
+	// Use conntector-j rather than com.mysql:mysql-connector for MySQL over 8.0.31 version
+	runtimeOnly 'com.mysql:mysql-connector-j'
 }
 
 // 프로젝트 단위 변수 설정
@@ -105,11 +109,11 @@ tasks.named('test') {
 
 tasks {
 	processResources {
-		duplicatesStrategy = org.gradle.api.file.DuplicatesStrategy.INCLUDE
+		duplicatesStrategy = INCLUDE
 	}
 
 	processTestResources {
-		duplicatesStrategy = org.gradle.api.file.DuplicatesStrategy.INCLUDE
+		duplicatesStrategy = INCLUDE
 	}
 }
 
