@@ -1,14 +1,14 @@
 # 목차
 
 1. [프로젝트 개요](#-프로젝트-개요)
-2. [시스템 구성도](#-시스템-구성도)
 2. [프로젝트 기술 스택](#-프로젝트-기술-스택)
-3. [Use Case / 유저 시나리오](#-use-case--유저-시나리오)
+3. [시스템 구성도](#-시스템-구성도)
 4. [Flow Chart](#-flow-chart)
-5. [기능 구조도](#-기능-구조도)
-6. [메뉴 구조도](#-메뉴-구조도)
-7. [ERD](#-erd)
-8. [Git Branch Strategy](#-git-branch-strategy)
+5. [Use Case / 유저 시나리오](#-use-case--유저-시나리오)
+6. [기능 구조도](#-기능-구조도)
+7. [메뉴 구조도](#-메뉴-구조도)
+8. [ERD](#-erd)
+9. [Git Branch Strategy](#-git-branch-strategy)
 
 # 📜 프로젝트 개요
 ![header](https://capsule-render.vercel.app/api?type=rect&color=transparent&height=200&section=header&text=Show%20your%20worth!&desc=당신의%20가치를%20보여주세요.&descAlign=70&descAlignY=70&fontSize=70&fontColor=703ee5&animation=fadeIn)
@@ -24,10 +24,6 @@
 `HOST`는 `버스킹`을 한 번 개설한 적이 있는 `USER`로, `HOST` 검색 시 노출됩니다.
 `ADMIN`은 관리자로, 서비스를 관리합니다.
 
-# 📑 시스템 구성도
-
-![µ'us - system architecture](https://github.com/f-lab-edu/show-your-worth/assets/11500877/eeb99b27-677a-4a5f-8f73-53199965b89e)
-
 # 🖥 프로젝트 기술 스택
 
 - <img src="https://img.shields.io/badge/Java-17-007396?style=flat&logo=java&logoColor=007396" />
@@ -40,9 +36,13 @@
 - ![IntelliJ](https://img.shields.io/badge/IntelliJ-2023.1-000000?logo=intellijidea&logoColor=000000)
 - ![Redis](https://img.shields.io/badge/Redis-%23DD0031.svg?logo=redis&logoColor=white) ![AWS](https://img.shields.io/badge/Amazon&nbsp;Web&nbsp;Service-232F3E.svg?logo=amazonaws&logoColor=white)
 
+# 📑 시스템 구성도
+
+![µ'us - system architecture](https://github.com/pray92/show-your-worth/assets/11500877/bbb0c9bd-0cae-4965-8cf6-2f11983b92f0)
+
 # 🎭 Use Case / 유저 시나리오
 
-대표 케이스만 기입되어 있습니다. 모든 케이스를 확인하려면 [WIKI - Use Case / 유저 시나리오](https://github.com/f-lab-edu/show-your-worth/wiki/03.-Use-Case---%EC%9C%A0%EC%A0%80-%EC%8B%9C%EB%82%98%EB%A6%AC%EC%98%A4)를 참고합니다.
+대표 케이스만 기입되어 있습니다. 모든 케이스를 확인하려면 [WIKI - Use Case / 유저 시나리오](https://github.com/pray92/show-your-worth/wiki/03.-Use-Case--%EC%9C%A0%EC%A0%80-%EC%8B%9C%EB%82%98%EB%A6%AC%EC%98%A4) 참고합니다.
 
 ## 1. COMMON
 
@@ -145,7 +145,7 @@
 
 # 🎞 Flow Chart
 
-대표 케이스만 기입되어 있습니다. 모든 케이스를 확인하려면 [WIKI - Flow Chart](https://github.com/f-lab-edu/show-your-worth/wiki/02.-Flow-Chart)를 참고합니다.
+대표 케이스만 기입되어 있습니다. 모든 케이스를 확인하려면 [WIKI - Flow Chart](https://github.com/pray92/show-your-worth/wiki/02.-Flow-Chart) 참고합니다.
 
 ## 1. COMMON
 
@@ -180,16 +180,16 @@
 
 # 📑 기능 구조도
 
-[WIKI - 기능 구조도](https://github.com/f-lab-edu/show-your-worth/wiki/04.-%EA%B8%B0%EB%8A%A5-%EA%B5%AC%EC%A1%B0%EB%8F%84)를 참고하시면 됩니다.
+[WIKI - 기능 구조도](https://github.com/pray92/show-your-worth/wiki/04.-%EA%B8%B0%EB%8A%A5-%EA%B5%AC%EC%A1%B0%EB%8F%84) 참고하시면 됩니다.
 
 # 📱 메뉴 구조도
 
-![μ'us - 메뉴 구조도-1](https://github.com/f-lab-edu/show-your-worth/assets/11500877/62d42f93-2696-4254-ac48-dae2bd39ccf1)
+![μ'us - 메뉴 구조도-1](https://github.com/pray92/show-your-worth/assets/11500877/484827d0-8143-4023-9384-5ac8ae2a7343)
 
 # 📄 ERD
 
-![µ'us - ERD](https://github.com/f-lab-edu/show-your-worth/assets/11500877/531983eb-b1f2-45ca-87d7-438bf53d2e17)
+![µ'us - ERD](https://github.com/pray92/show-your-worth/assets/11500877/361b4ba7-3718-4aa1-b78c-1873ac5b1e9b)
 
 # 🌲 Git Branch Strategy
 
-![](https://github.com/f-lab-edu/show-your-worth/assets/11500877/68605232-e78f-4ff3-88cb-9cbbba9943c0)
+![](https://github.com/pray92/show-your-worth/assets/11500877/0b9cb80b-a9e5-434a-bffa-0f30f7fd639a)
