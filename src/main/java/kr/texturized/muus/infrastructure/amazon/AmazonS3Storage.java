@@ -1,4 +1,4 @@
-package kr.texturized.muus.infrastructure.ncp;
+package kr.texturized.muus.infrastructure.amazon;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.SdkClientException;
@@ -17,7 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
  * Ncp Object Storage for post images.
  */
 @Slf4j
-public class NcpObjectStorage implements PostImageStorage {
+public class AmazonS3Storage implements PostImageStorage {
 
     private final AmazonS3Client client;
 
@@ -55,7 +55,7 @@ public class NcpObjectStorage implements PostImageStorage {
      * @param region region
      * @param bucketName bucketName
      */
-    public NcpObjectStorage(
+    public AmazonS3Storage(
         final String accessKey,
         final String secretKey,
         final String endPoint,

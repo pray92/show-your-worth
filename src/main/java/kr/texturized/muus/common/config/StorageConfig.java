@@ -1,6 +1,6 @@
 package kr.texturized.muus.common.config;
 
-import kr.texturized.muus.infrastructure.ncp.NcpObjectStorage;
+import kr.texturized.muus.infrastructure.amazon.AmazonS3Storage;
 import kr.texturized.muus.common.storage.PostImageStorage;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -26,6 +26,6 @@ public class StorageConfig {
 
     @Bean
     public PostImageStorage postImageStorage() {
-        return new NcpObjectStorage(accessKey, secretKey, endPoint, region, bucketName);
+        return new AmazonS3Storage(accessKey, secretKey, endPoint, region, bucketName);
     }
 }
