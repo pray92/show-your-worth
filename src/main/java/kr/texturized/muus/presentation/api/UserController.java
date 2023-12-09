@@ -101,7 +101,7 @@ public class UserController {
         final SignUpVo dto = request.toDto();
         final SignUpResultVo vo = userService.signUp(dto);
 
-        return ResponseEntity.status(HttpStatus.OK).body("Sign-up");
+        return ResponseEntity.status(HttpStatus.OK).body("회원가입 성공했어요.");
     }
 
     /**
@@ -132,7 +132,7 @@ public class UserController {
     public ResponseEntity<String> signOut() {
         signInOutService.signOut();
 
-        return ResponseEntity.status(HttpStatus.OK).body("Sign-out");
+        return ResponseEntity.status(HttpStatus.OK).body("로그아웃되었어요.");
     }
 
     /**
@@ -147,7 +147,7 @@ public class UserController {
         final String accountId = signInOutService.getCurrentAccountId();
         userService.passwordMatches(accountId, password);
 
-        return ResponseEntity.status(HttpStatus.OK).body("Password matches");
+        return ResponseEntity.status(HttpStatus.OK).body("비밀번호가 일치해요.");
     }
 
     /**
@@ -167,7 +167,7 @@ public class UserController {
         );
         userService.changePassword(accountId, password);
 
-        return ResponseEntity.status(HttpStatus.OK).body("Password changed");
+        return ResponseEntity.status(HttpStatus.OK).body("비밀번호가 변경되었어요.");
     }
 
     /**
@@ -187,7 +187,7 @@ public class UserController {
         );
         userService.checkDuplicatedNickname(nickname);
 
-        return ResponseEntity.status(HttpStatus.OK).body("Nickname may change");
+        return ResponseEntity.status(HttpStatus.OK).body("바꿀 수 있는 닉네임이에요.");
     }
 
     /**
@@ -208,7 +208,7 @@ public class UserController {
         userService.checkDuplicatedNickname(nickname);
         userService.changeNickname(accountId, nickname);
 
-        return ResponseEntity.status(HttpStatus.OK).body("Password changed");
+        return ResponseEntity.status(HttpStatus.OK).body("닉네임이 변경되었어요.");
     }
 
     /**
