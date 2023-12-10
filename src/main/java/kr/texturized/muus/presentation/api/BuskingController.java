@@ -79,14 +79,16 @@ public class BuskingController {
      * @return Created busking ID in DB
      */
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/{id}")
+    @PostMapping("/{userId}")
     public Long createBusking(
-        @PathVariable(value = "id") final Long userId,
+        @PathVariable final Long userId,
         @Valid @RequestPart final BuskingRequest request,
         @RequestPart("images") final MultipartFile[] imageFiles
     ) {
         rangeChecker.validateRange(request.latitude(), request.longitude(), 0.0, 0.0);
-        return buskingService.create(userId, dto(request, imageFiles));
+
+        final CreateBuskingVo dto = request.toDto(imageFiles);
+        return buskingService.create(userId, dto);
     }
 
     /**
@@ -97,26 +99,5 @@ public class BuskingController {
      */
     private BuskingsInMapResponse dto(final BuskingMapVo vo) {
         return new BuskingsInMapResponse(vo.id(), vo.latitude(), vo.longitude());
-    }
-
-    /**
-     * Request to Creation Vo.
-     *
-     * @param request request
-     * @return Vo for busking creation
-     */
-    private CreateBuskingVo dto(final BuskingRequest request,
-        final MultipartFile[] imageFiles
-    ) {
-        return new CreateBuskingVo(
-            request.title(),
-            List.of(imageFiles),
-            request.latitude(),
-            request.longitude(),
-            request.keywords(),
-            request.description(),
-            request.managedStartTime(),
-            request.managedEndTime()
-        );
     }
 }
