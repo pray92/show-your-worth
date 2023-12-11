@@ -5,7 +5,6 @@ import static java.util.stream.Collectors.*;
 import java.util.List;
 import javax.validation.Valid;
 import kr.texturized.muus.application.service.BuskingService;
-import kr.texturized.muus.application.service.BuskingViewService;
 import kr.texturized.muus.common.coordinate.RangeChecker;
 import kr.texturized.muus.domain.vo.BuskingMapVo;
 import kr.texturized.muus.domain.vo.CreateBuskingVo;
@@ -29,7 +28,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class BuskingController {
 
     private final RangeChecker rangeChecker;
-    private final BuskingViewService buskingViewService;
     private final BuskingService buskingService;
 
     /**
@@ -50,7 +48,7 @@ public class BuskingController {
     ) {
         rangeChecker.validateRange(latitude, longitude, widthMeter, heightMeter);
 
-        return buskingViewService.getActiveBuskingsInMap(
+        return buskingService.getActiveBuskingsInMap(
                 latitude,
                 longitude,
                 widthMeter,
