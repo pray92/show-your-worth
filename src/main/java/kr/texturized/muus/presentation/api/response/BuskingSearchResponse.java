@@ -11,7 +11,7 @@ import java.util.List;
  */
 public record BuskingSearchResponse(List<BuskingSearchResultVo> results) {
 
-    public static BuskingSearchResponse of(List<BuskingSearchResultVo> results) {
+    public static BuskingSearchResponse of(final List<BuskingSearchResultVo> results) {
         return new BuskingSearchResponse(results);
     }
 }
