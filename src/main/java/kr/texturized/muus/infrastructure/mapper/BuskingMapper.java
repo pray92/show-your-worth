@@ -1,14 +1,15 @@
 package kr.texturized.muus.infrastructure.mapper;
 
 import java.util.List;
-import kr.texturized.muus.domain.vo.BuskingMapVo;
+
+import kr.texturized.muus.domain.vo.BuskingSearchResultVo;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
  * DAO for Busking Selection.
  */
 @Mapper
-public interface BuskingViewMapper {
+public interface BuskingMapper {
 
     /**
      * Get Active buskings for map.
@@ -20,10 +21,5 @@ public interface BuskingViewMapper {
      * @param height Range of height to show, it should be converted to longitude
      * @return List of Busking, just id and coordinate
      */
-    List<BuskingMapVo> getActiveBuskingsInMap(
-        double latitude,
-        double longitude,
-        double width,
-        double height
-    );
+    List<BuskingSearchResultVo> search(double latitude, double longitude, double width, double height);
 }

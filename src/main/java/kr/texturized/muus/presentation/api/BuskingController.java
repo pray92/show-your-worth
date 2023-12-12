@@ -1,25 +1,19 @@
 package kr.texturized.muus.presentation.api;
 
-import static java.util.stream.Collectors.*;
-
 import java.util.List;
 import javax.validation.Valid;
 import kr.texturized.muus.application.service.BuskingService;
 import kr.texturized.muus.common.coordinate.RangeChecker;
-import kr.texturized.muus.domain.vo.BuskingMapVo;
+import kr.texturized.muus.domain.vo.BuskingSearchResultVo;
+import kr.texturized.muus.domain.vo.BuskingSearchVo;
 import kr.texturized.muus.domain.vo.CreateBuskingVo;
 import kr.texturized.muus.presentation.api.request.BuskingRequest;
-import kr.texturized.muus.presentation.api.response.BuskingsInMapResponse;
+import kr.texturized.muus.presentation.api.request.BuskingSearchRequest;
+import kr.texturized.muus.presentation.api.response.BuskingSearchResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
@@ -29,34 +23,6 @@ public class BuskingController {
 
     private final RangeChecker rangeChecker;
     private final BuskingService buskingService;
-
-    /**
-     * Get busking list to show in map.<br>
-     *
-     * @param latitude Offset latitude
-     * @param longitude Offset longitude
-     * @param widthMeter Range of meter(Width)
-     * @param heightMeter Range of meter(Height)
-     * @return List of busking
-     */
-    @GetMapping
-    public List<BuskingsInMapResponse> getBuskingsInMap(
-        @RequestParam double latitude,
-        @RequestParam double longitude,
-        @RequestParam double widthMeter,
-        @RequestParam double heightMeter
-    ) {
-        rangeChecker.validateRange(latitude, longitude, widthMeter, heightMeter);
-
-        return buskingService.getActiveBuskingsInMap(
-                latitude,
-                longitude,
-                widthMeter,
-                heightMeter
-            ).stream()
-            .map(this::dto)
-            .collect(toList());
-    }
 
     /**
      * Create Busking Post.<br>
@@ -76,9 +42,8 @@ public class BuskingController {
      * @param imageFiles images for post
      * @return Created busking ID in DB
      */
-    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/{userId}")
-    public Long createBusking(
+    public ResponseEntity<Long> create(
         @PathVariable final Long userId,
         @Valid @RequestPart final BuskingRequest request,
         @RequestPart("images") final MultipartFile[] imageFiles
@@ -86,16 +51,24 @@ public class BuskingController {
         rangeChecker.validateRange(request.latitude(), request.longitude(), 0.0, 0.0);
 
         final CreateBuskingVo dto = request.toDto(imageFiles);
-        return buskingService.create(userId, dto);
+        final Long buskingId = buskingService.create(userId, dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(buskingId);
     }
 
     /**
-     * Result vo to response.
+     * 지도에서 특정 범위의 활동 예정 및 진행 중인 버스킹을 조회.
      *
-     * @param vo List of busking in map vo
-     * @return Response of searching the list of busking in specific range of map
+     * @param request 특정 위치 및 범위에 대한 요청
+     * @return 활동 예정 및 진행 중인 버스킹 목록
      */
-    private BuskingsInMapResponse dto(final BuskingMapVo vo) {
-        return new BuskingsInMapResponse(vo.id(), vo.latitude(), vo.longitude());
+    @GetMapping
+    public ResponseEntity<BuskingSearchResponse> search(@RequestBody BuskingSearchRequest request) {
+        rangeChecker.validateRange(request.latitude(), request.longitude(), request.widthMeter(), request.heightMeter());
+
+        final BuskingSearchVo vo = BuskingSearchVo.of(request);
+        final List<BuskingSearchResultVo> resultVo = buskingService.search(vo);
+
+        return ResponseEntity.status(HttpStatus.OK).body(BuskingSearchResponse.of(resultVo));
     }
+
 }

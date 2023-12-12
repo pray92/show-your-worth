@@ -8,7 +8,7 @@ import java.util.List;
 import kr.texturized.muus.domain.entity.Busking;
 import kr.texturized.muus.domain.entity.User;
 import kr.texturized.muus.domain.entity.UserTypeEnum;
-import kr.texturized.muus.domain.vo.BuskingMapVo;
+import kr.texturized.muus.domain.vo.BuskingSearchResultVo;
 import kr.texturized.muus.infrastructure.repository.BuskingRepository;
 import kr.texturized.muus.infrastructure.repository.UserRepository;
 import kr.texturized.muus.test.IntegrationTest;
@@ -18,7 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Slf4j
-class BuskingViewMapperTest extends IntegrationTest {
+class BuskingMapperTest extends IntegrationTest {
 
     @Autowired
     private UserRepository userRepository;
@@ -27,7 +27,7 @@ class BuskingViewMapperTest extends IntegrationTest {
     private BuskingRepository buskingRepository;
 
     @Autowired
-    private BuskingViewMapper buskingViewMapper;
+    private BuskingMapper buskingMapper;
 
     @BeforeEach
     void beforeEach() {
@@ -71,7 +71,7 @@ class BuskingViewMapperTest extends IntegrationTest {
 
     @Test
     void getActiveBuskingInMap() {
-        List<BuskingMapVo> buskings = buskingViewMapper.getActiveBuskingsInMap(
+        List<BuskingSearchResultVo> buskings = buskingMapper.search(
             27.0,
             120.0,
             1.0,
@@ -79,7 +79,7 @@ class BuskingViewMapperTest extends IntegrationTest {
         );
         assertThat(buskings.size()).isEqualTo(2);
 
-        buskings = buskingViewMapper.getActiveBuskingsInMap(
+        buskings = buskingMapper.search(
             27.0,
             120.0,
             0.5,
