@@ -6,8 +6,8 @@ import kr.texturized.muus.application.service.BuskingService;
 import kr.texturized.muus.common.coordinate.RangeChecker;
 import kr.texturized.muus.domain.vo.BuskingSearchResultVo;
 import kr.texturized.muus.domain.vo.BuskingSearchVo;
-import kr.texturized.muus.domain.vo.CreateBuskingVo;
-import kr.texturized.muus.presentation.api.request.BuskingRequest;
+import kr.texturized.muus.domain.vo.BuskingCreateVo;
+import kr.texturized.muus.presentation.api.request.BuskingCreateRequest;
 import kr.texturized.muus.presentation.api.request.BuskingSearchRequest;
 import kr.texturized.muus.presentation.api.response.BuskingSearchResponse;
 import lombok.RequiredArgsConstructor;
@@ -45,13 +45,14 @@ public class BuskingController {
     @PostMapping("/{userId}")
     public ResponseEntity<Long> create(
         @PathVariable final Long userId,
-        @Valid @RequestPart final BuskingRequest request,
+        @Valid @RequestPart final BuskingCreateRequest request,
         @RequestPart("images") final MultipartFile[] imageFiles
     ) {
         rangeChecker.validateRange(request.latitude(), request.longitude(), 0.0, 0.0);
 
-        final CreateBuskingVo dto = request.toDto(imageFiles);
-        final Long buskingId = buskingService.create(userId, dto);
+        final BuskingCreateVo vo = BuskingCreateVo.of(userId, request, imageFiles);
+        final Long buskingId = buskingService.create(vo);
+
         return ResponseEntity.status(HttpStatus.CREATED).body(buskingId);
     }
 

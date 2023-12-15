@@ -2,6 +2,8 @@ package kr.texturized.muus.domain.vo;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
+import kr.texturized.muus.presentation.api.request.BuskingCreateRequest;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -16,7 +18,8 @@ import org.springframework.web.multipart.MultipartFile;
  * @param managedStartTime managedStartTime
  * @param managedEndTime managedEndTime
  */
-public record CreateBuskingVo(
+public record BuskingCreateVo(
+    Long userId,
     String title,
     List<MultipartFile> imageFiles,
     Double latitude,
@@ -27,4 +30,21 @@ public record CreateBuskingVo(
     LocalDateTime managedEndTime
 ) {
 
+    public static BuskingCreateVo of(
+        final Long userId,
+        final BuskingCreateRequest request,
+        final MultipartFile[] imageFiles
+    ) {
+        return new BuskingCreateVo(
+                userId,
+                request.title(),
+                List.of(imageFiles),
+                request.latitude(),
+                request.longitude(),
+                request.keywords(),
+                request.description(),
+                request.managedStartTime(),
+                request.managedEndTime()
+        );
+    }
 }

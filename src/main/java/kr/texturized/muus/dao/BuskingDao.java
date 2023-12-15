@@ -4,18 +4,15 @@ import kr.texturized.muus.domain.entity.Busking;
 import kr.texturized.muus.domain.entity.Image;
 import kr.texturized.muus.domain.entity.Keyword;
 import kr.texturized.muus.domain.entity.PostCategoryEnum;
-import kr.texturized.muus.domain.entity.User;
-import kr.texturized.muus.domain.entity.fk.ImageFk;
-import kr.texturized.muus.domain.entity.fk.KeywordFk;
-import kr.texturized.muus.domain.exception.UserNotFoundException;
-import kr.texturized.muus.domain.vo.BuskingVo;
-import kr.texturized.muus.infrastructure.mapper.UserViewMapper;
+import kr.texturized.muus.domain.vo.BuskingCreateModelVo;
 import kr.texturized.muus.infrastructure.repository.BuskingRepository;
 import kr.texturized.muus.infrastructure.repository.ImageRepository;
 import kr.texturized.muus.infrastructure.repository.KeywordRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * DAO for Busking CUD.
@@ -25,60 +22,78 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class BuskingDao {
 
-    private final UserViewMapper userViewMapper;
     private final BuskingRepository buskingRepository;
     private final KeywordRepository keywordRepository;
     private final ImageRepository imageRepository;
 
     /**
-     * Create busking.
+     * 버스킹을 생성해요.
      *
-     * @param userId User ID in DB creating busking
-     * @param vo VO for busking creation
-     * @return busking ID
+     * @param vo 버스킹 생성에 필요한 데이터 집합을 추상화한 ModelVo
+     * @return 버스킹 ID
      */
-    public Long create(final Long userId, final BuskingVo vo) {
-        User user = userViewMapper.findById(userId)
-            .orElseThrow(() -> new UserNotFoundException(userId));
+    public Long create(final BuskingCreateModelVo vo) {
 
-        // TODO : Refactor, split logic using private method
+        saveBusking(vo.busking());
+        saveKeywords(vo.keywords(), PostCategoryEnum.BUSKING, vo.busking().getTitle());
+        saveImages(vo.images(), PostCategoryEnum.BUSKING, vo.busking().getTitle());
 
-        Busking busking = buskingRepository.save(Busking.builder()
-                .host(user)
-                .title(vo.title())
-                .description(vo.description())
-                .latitude(vo.latitude())
-                .longitude(vo.longitude())
-                .managedStartTime(vo.managedStartTime())
-                .managedEndTime(vo.managedEndTime())
-            .build());
-
-        log.info("Busking is created({}): {}", busking.getId(), busking.getTitle());
-
-        vo.keywords()
-            .forEach(keyword -> {
-                Keyword entity = keywordRepository.save(Keyword.builder()
-                        .id(new KeywordFk(busking.getId(), PostCategoryEnum.BUSKING))
-                        .keyword(keyword)
-                    .build());
-
-                log.info("Keyword: {} for Busking {} is added", entity.getKeyword(), busking.getTitle());
-            });
-
-        for (int order = 0; order < vo.imagePaths().size(); ++order) {
-            Image entity = imageRepository.save(Image.builder()
-                    .id(ImageFk.builder()
-                        .postId(busking.getId())
-                        .postType(PostCategoryEnum.BUSKING)
-                        .uploadOrder(order)
-                        .build())
-                    .path(vo.imagePaths().get(order))
-                .build());
-
-            log.info("Image No. {} for Busking {} is added in {}", order, busking.getTitle(), entity.getPath());
-        }
-
-        return busking.getId();
+        return vo.busking().getId();
     }
 
+
+    /**
+     * 버스킹 엔티티를 저장해요. 키워드나 이미지는 따로 저장해야 해요.
+     *
+     * @param busking 버스킹 엔티티
+     */
+    private void saveBusking(final Busking busking) {
+        buskingRepository.save(busking);
+
+        log.info("Busking is created({}): {}", busking.getId(), busking.getTitle());
+    }
+
+    /**
+     * 키워드 엔티티를 저장합니다. 게시물 정보는 키워드 엔티티에 있어요.
+     *
+     * @param keywords 키워드 엔티티 목록
+     * @param category 키워드에 속한 게시물 타입
+     * @param title 게시물 제목
+     */
+    private void saveKeywords(
+        final List<Keyword> keywords,
+        final PostCategoryEnum category,
+        final String title
+    ) {
+        keywords.forEach(keyword -> {
+            keywordRepository.save(keyword);
+
+            log.info("Keyword: {} for {} {} is added", keyword.getKeyword(), category, title);
+        });
+    }
+
+    /**
+     * 이미지 엔티티를 저장합니다. 게시물 정보는 이미지 엔티티에 있어요.
+     *
+     * @param images 이미지 엔티티 목록
+     * @param category 이미지에 속한 게시물 타입
+     * @param title 게시물 제목
+     */
+    private void saveImages(
+            final List<Image> images,
+            final PostCategoryEnum category,
+            final String title
+    ) {
+        images.forEach(image -> {
+            imageRepository.save(image);
+
+            log.info("Image No. {} for {} {} is added in {}",
+                image.getId().getUploadOrder(),
+                category,
+                title,
+                image.getPath()
+            );
+        });
+    }
 }
+
