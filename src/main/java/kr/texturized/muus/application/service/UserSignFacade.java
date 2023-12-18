@@ -69,6 +69,13 @@ public class UserSignFacade {
         userService.checkDuplicatedNickname(nickname);
     }
 
+    /**
+     * 닉네임을 변경해요.
+     *
+     * @param accountId 대상 계정 ID
+     * @param nickname 변경할 닉네임
+     * @return 성공 시 테이블 ID
+     */
     @Transactional
     public Long changeNickname(String accountId, String nickname) {
         return userService.changeNickname(accountId, nickname);
