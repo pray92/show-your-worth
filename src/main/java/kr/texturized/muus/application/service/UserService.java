@@ -11,7 +11,7 @@ import kr.texturized.muus.domain.vo.AccountVo;
 import kr.texturized.muus.domain.vo.SignInVo;
 import kr.texturized.muus.domain.vo.SignUpResultVo;
 import kr.texturized.muus.domain.vo.SignUpVo;
-import kr.texturized.muus.infrastructure.mapper.UserViewMapper;
+import kr.texturized.muus.infrastructure.mapper.UserMapper;
 import kr.texturized.muus.infrastructure.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final UserViewMapper userViewMapper;
+    private final UserMapper userMapper;
 
     /**
      * Sign up logic with total validation.
@@ -71,6 +71,7 @@ public class UserService {
         final User signInUser = getUser(vo.accountId())
             .filter(user -> PasswordEncryptor.matches(vo.password(), user.getPassword()))
             .orElseThrow(InvalidAccountException::new);
+
         return new AccountVo(signInUser.getAccountId(), signInUser.getUserType());
     }
 
@@ -134,7 +135,7 @@ public class UserService {
      * @return User Entity
      */
     private Optional<User> getUser(final String accountId) {
-        return userViewMapper.findByAccountId(accountId);
+        return userMapper.findByAccountId(accountId);
     }
 
     /**
@@ -143,7 +144,7 @@ public class UserService {
      * @param accountId account to user
      */
     public void checkDuplicatedAccountId(String accountId) {
-        if (userViewMapper.existsByAccountId(accountId)) {
+        if (userMapper.existsByAccountId(accountId)) {
             throw new DuplicatedAccountIdException();
         }
     }
@@ -154,7 +155,7 @@ public class UserService {
      * @param nickname nickname to use
      */
     public void checkDuplicatedNickname(String nickname) {
-        if (userViewMapper.existsByNickname(nickname)) {
+        if (userMapper.existsByNickname(nickname)) {
             throw new DuplicatedNicknameException();
         }
     }
@@ -166,6 +167,6 @@ public class UserService {
      * @return User Type
      */
     public UserTypeEnum getAccountIdUserType(String accountId) {
-        return userViewMapper.findUserTypeByAccountId(accountId);
+        return userMapper.findUserTypeByAccountId(accountId);
     }
 }

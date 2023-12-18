@@ -12,7 +12,7 @@ import kr.texturized.muus.domain.entity.fk.KeywordFk;
 import kr.texturized.muus.domain.exception.UserNotFoundException;
 import kr.texturized.muus.domain.vo.*;
 import kr.texturized.muus.infrastructure.mapper.BuskingMapper;
-import kr.texturized.muus.infrastructure.mapper.UserViewMapper;
+import kr.texturized.muus.infrastructure.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -29,7 +29,7 @@ import static java.util.stream.Collectors.*;
 @RequiredArgsConstructor
 public class BuskingService {
 
-    private final UserViewMapper userViewMapper;
+    private final UserMapper userMapper;
     private final BuskingDao buskingDao;
 
     private final BuskingMapper buskingMapper;
@@ -40,7 +40,7 @@ public class BuskingService {
     @Transactional
     public Long create(final BuskingCreateVo vo) {
 
-        final User user = userViewMapper.findById(vo.userId()).orElseThrow(() -> new UserNotFoundException(vo.userId()));
+        final User user = userMapper.findById(vo.userId()).orElseThrow(() -> new UserNotFoundException(vo.userId()));
 
         final Busking busking = Busking.builder()
                     .host(user)
