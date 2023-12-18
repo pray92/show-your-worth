@@ -9,12 +9,12 @@ import kr.texturized.muus.domain.entity.UserTypeEnum;
  * @param accountId 계정 ID
  * @param userType 유저 타입
  */
-public record SignInResultVo(
+public record UserSignInResultVo(
     String accountId,
     UserTypeEnum userType
 ) {
 
-    public static SignInResultVo of(final User user) {
-        return new SignInResultVo(user.getAccountId(), user.getUserType());
+    public static UserSignInResultVo of(final User user) {
+        return new UserSignInResultVo(user.getAccountId(), user.getUserType());
     }
 }

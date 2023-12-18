@@ -7,9 +7,9 @@ import kr.texturized.muus.application.service.exception.InvalidAccountException;
 import kr.texturized.muus.common.util.PasswordEncryptor;
 import kr.texturized.muus.domain.entity.User;
 import kr.texturized.muus.domain.entity.UserTypeEnum;
-import kr.texturized.muus.domain.vo.SignInResultVo;
-import kr.texturized.muus.domain.vo.SignInVo;
-import kr.texturized.muus.domain.vo.SignUpVo;
+import kr.texturized.muus.domain.vo.UserSignInResultVo;
+import kr.texturized.muus.domain.vo.UserSignInVo;
+import kr.texturized.muus.domain.vo.UserSignUpVo;
 import kr.texturized.muus.infrastructure.mapper.UserMapper;
 import kr.texturized.muus.infrastructure.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +36,7 @@ public class UserService {
      *         Optional is recommended to use for return result
      */
     @Transactional
-    public Long signUp(final SignUpVo vo) {
+    public Long signUp(final UserSignUpVo vo) {
         checkDuplicatedAccountId(vo.accountId());
         checkDuplicatedNickname(vo.nickname());
 
@@ -67,12 +67,12 @@ public class UserService {
      * @return user with {@code Optional<T>} wrapper class,
      *      Optional is recommended to use for return result
      */
-    public SignInResultVo getAccount(final SignInVo vo) {
+    public UserSignInResultVo getAccount(final UserSignInVo vo) {
         final User signInUser = getUser(vo.accountId())
             .filter(user -> PasswordEncryptor.matches(vo.password(), user.getPassword()))
             .orElseThrow(InvalidAccountException::new);
 
-        return SignInResultVo.of(signInUser);
+        return UserSignInResultVo.of(signInUser);
     }
 
     /**

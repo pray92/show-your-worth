@@ -8,12 +8,12 @@ import kr.texturized.muus.common.error.exception.ErrorCode;
 import kr.texturized.muus.common.util.SignInCheck;
 import kr.texturized.muus.common.util.ValidationConstants;
 import kr.texturized.muus.domain.entity.UserTypeEnum;
-import kr.texturized.muus.domain.vo.SignInResultVo;
-import kr.texturized.muus.domain.vo.SignInVo;
-import kr.texturized.muus.domain.vo.SignUpVo;
-import kr.texturized.muus.presentation.api.request.SignInRequest;
-import kr.texturized.muus.presentation.api.request.SignUpRequest;
-import kr.texturized.muus.presentation.api.response.SignInResponse;
+import kr.texturized.muus.domain.vo.UserSignInResultVo;
+import kr.texturized.muus.domain.vo.UserSignInVo;
+import kr.texturized.muus.domain.vo.UserSignUpVo;
+import kr.texturized.muus.presentation.api.request.UserSignInRequest;
+import kr.texturized.muus.presentation.api.request.UserSignUpRequest;
+import kr.texturized.muus.presentation.api.response.UserSignInResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -95,9 +95,9 @@ public class UserController {
      * @return DB identical id of signed-up account
      */
     @PostMapping("/sign-up")
-    public ResponseEntity<Long> signUp(@RequestBody @Valid final SignUpRequest request) {
-        final SignUpVo signUpVo = SignUpVo.of(request);
-        final Long userId = userSignFacade.signUp(signUpVo);
+    public ResponseEntity<Long> signUp(@RequestBody @Valid final UserSignUpRequest request) {
+        final UserSignUpVo userSignUpVo = UserSignUpVo.of(request);
+        final Long userId = userSignFacade.signUp(userSignUpVo);
 
         return ResponseEntity.status(HttpStatus.OK).body(userId);
     }
@@ -113,11 +113,11 @@ public class UserController {
      * @return result(Could be token) and user type
      */
     @PostMapping("/sign-in")
-    public ResponseEntity<SignInResponse> signIn(@RequestBody final SignInRequest request) {
-        final SignInVo signInVo = SignInVo.of(request);
-        final SignInResultVo resultVo = userSignFacade.signIn(signInVo);
+    public ResponseEntity<UserSignInResponse> signIn(@RequestBody final UserSignInRequest request) {
+        final UserSignInVo userSignInVo = UserSignInVo.of(request);
+        final UserSignInResultVo resultVo = userSignFacade.signIn(userSignInVo);
 
-        return ResponseEntity.status(HttpStatus.OK).body(SignInResponse.of(resultVo));
+        return ResponseEntity.status(HttpStatus.OK).body(UserSignInResponse.of(resultVo));
     }
 
     /**

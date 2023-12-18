@@ -1,9 +1,9 @@
 package kr.texturized.muus.application.service;
 
 import kr.texturized.muus.domain.entity.UserTypeEnum;
-import kr.texturized.muus.domain.vo.SignInResultVo;
-import kr.texturized.muus.domain.vo.SignInVo;
-import kr.texturized.muus.domain.vo.SignUpVo;
+import kr.texturized.muus.domain.vo.UserSignInResultVo;
+import kr.texturized.muus.domain.vo.UserSignInVo;
+import kr.texturized.muus.domain.vo.UserSignUpVo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +26,7 @@ public class UserSignFacade {
      * @return DB에 등록된 User ID
      */
     @Transactional
-    public Long signUp(final SignUpVo vo) {
+    public Long signUp(final UserSignUpVo vo) {
         return userService.signUp(vo);
     }
 
@@ -36,8 +36,8 @@ public class UserSignFacade {
      * @param vo 로그인에 필요한 정보 VO
      * @return 로그인한 유저 정보 VO
      */
-    public SignInResultVo signIn(final SignInVo vo) {
-        final SignInResultVo resultVo = userService.getAccount(vo);
+    public UserSignInResultVo signIn(final UserSignInVo vo) {
+        final UserSignInResultVo resultVo = userService.getAccount(vo);
 
         signInOutService.signIn(resultVo.accountId());
 
