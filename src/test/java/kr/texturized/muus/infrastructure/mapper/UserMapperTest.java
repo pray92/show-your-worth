@@ -10,13 +10,13 @@ import kr.texturized.muus.test.IntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class UserViewMapperTest extends IntegrationTest {
+public class UserMapperTest extends IntegrationTest {
 
     @Autowired
     private UserRepository userRepository;
 
     @Autowired
-    private UserViewMapper userViewMapper;
+    private UserMapper userMapper;
 
     @Test
     void signUpThenSignIn() {
@@ -28,7 +28,7 @@ public class UserViewMapperTest extends IntegrationTest {
                 .userType(UserTypeEnum.USER)
             .build());
 
-        Optional<User> signIn = userViewMapper.findByAccountId("accountId");
+        Optional<User> signIn = userMapper.findByAccountId("accountId");
         assertThat(signIn).isNotEmpty();
         assertThat(signIn.get().getAccountId()).isEqualTo(signUp.getAccountId());
         assertThat(signIn.get().getPassword()).isEqualTo(signUp.getPassword());

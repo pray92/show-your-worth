@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="kr.texturized.muus.infrastructure.mapper.UserViewMapper">
+<mapper namespace="kr.texturized.muus.infrastructure.mapper.UserMapper">
 
   <select id="existsByAccountId" parameterType="String" resultType="boolean">
     select exists (

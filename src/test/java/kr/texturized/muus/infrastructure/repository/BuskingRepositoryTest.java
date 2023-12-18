@@ -8,7 +8,7 @@ import java.util.Optional;
 import kr.texturized.muus.domain.entity.Busking;
 import kr.texturized.muus.domain.entity.User;
 import kr.texturized.muus.domain.entity.UserTypeEnum;
-import kr.texturized.muus.infrastructure.mapper.UserViewMapper;
+import kr.texturized.muus.infrastructure.mapper.UserMapper;
 import kr.texturized.muus.test.IntegrationTest;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.data.Percentage;
@@ -23,7 +23,7 @@ class BuskingRepositoryTest extends IntegrationTest {
     private UserRepository userRepository;
 
     @Autowired
-    private UserViewMapper userViewMapper;
+    private UserMapper userMapper;
 
     @Autowired
     private BuskingRepository buskingRepository;
@@ -41,7 +41,7 @@ class BuskingRepositoryTest extends IntegrationTest {
     @Test
     void createBusking() {
         Busking busking = buskingRepository.save(Busking.builder()
-            .host(userViewMapper.findByAccountId("redgem92").orElseThrow())
+            .host(userMapper.findByAccountId("redgem92").orElseThrow())
             .title("Test")
             .description("Hello fells")
             .latitude(27.0)

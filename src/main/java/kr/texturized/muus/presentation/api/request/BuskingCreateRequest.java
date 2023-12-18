@@ -1,21 +1,21 @@
-package kr.texturized.muus.domain.vo;
+package kr.texturized.muus.presentation.api.request;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+import kr.texturized.muus.domain.vo.BuskingCreateVo;
+import org.springframework.web.multipart.MultipartFile;
+
 /**
- * VO for busking.
- * Usage is for creation, read and update.
+ * Request for busking create, update.
  */
-public record BuskingVo(
+public record BuskingCreateRequest(
     String title,
-    List<String> imagePaths,
     Double latitude,
     Double longitude,
     List<String> keywords,
     String description,
     LocalDateTime managedStartTime,
     LocalDateTime managedEndTime
-) {
-
+){
 }
