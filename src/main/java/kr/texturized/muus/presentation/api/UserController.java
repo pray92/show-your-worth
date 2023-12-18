@@ -171,28 +171,6 @@ public class UserController {
     }
 
     /**
-     * Check nickname validation and duplication before change.
-     *
-     * @param nickname Nickname to check
-     * @return Message for valid
-     */
-    @GetMapping("/change/check/nickname")
-    @SignInCheck(userType = {UserTypeEnum.USER, UserTypeEnum.ADMIN})
-    public ResponseEntity<String> checkNicknameBeforeChange(@RequestParam final String nickname) {
-        userSignFacade.getCurrentAccountId();     // Use for authorization
-
-        validatePattern(
-            nickname,
-            ValidationConstants.NICKNAME_PATTERN,
-            ValidationConstants.NICKNAME_PATTERN_INVALID_MESSAGE
-        );
-
-        userSignFacade.checkDuplicatedNickname(nickname);
-
-        return ResponseEntity.status(HttpStatus.OK).body("바꿀 수 있는 닉네임이에요.");
-    }
-
-    /**
      * Change account's nickname.
      *
      * @param nickname Nickname
