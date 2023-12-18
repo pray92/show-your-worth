@@ -7,9 +7,8 @@ import kr.texturized.muus.application.service.exception.InvalidAccountException;
 import kr.texturized.muus.common.util.PasswordEncryptor;
 import kr.texturized.muus.domain.entity.User;
 import kr.texturized.muus.domain.entity.UserTypeEnum;
-import kr.texturized.muus.domain.vo.AccountVo;
+import kr.texturized.muus.domain.vo.SignInResultVo;
 import kr.texturized.muus.domain.vo.SignInVo;
-import kr.texturized.muus.domain.vo.SignUpResultVo;
 import kr.texturized.muus.domain.vo.SignUpVo;
 import kr.texturized.muus.infrastructure.mapper.UserMapper;
 import kr.texturized.muus.infrastructure.repository.UserRepository;
@@ -37,23 +36,24 @@ public class UserService {
      *         Optional is recommended to use for return result
      */
     @Transactional
-    public SignUpResultVo signUp(final SignUpVo vo) {
+    public Long signUp(final SignUpVo vo) {
         checkDuplicatedAccountId(vo.accountId());
         checkDuplicatedNickname(vo.nickname());
 
         final String encodedPassword = PasswordEncryptor.encrypt(vo.password());
         final User signUpUser = Optional.of(userRepository.save(User.builder()
-                .accountId(vo.accountId())
-                .password(encodedPassword)
-                .nickname(vo.nickname())
-                .userType(UserTypeEnum.USER)
+                    .accountId(vo.accountId())
+                    .password(encodedPassword)
+                    .nickname(vo.nickname())
+                    .userType(UserTypeEnum.USER)
                 .build()))
             .map(user -> {
                 log.info("Sign up: {}", user);
+
                 return user;
             }).orElseThrow(InvalidAccountException::new);
 
-        return new SignUpResultVo(signUpUser.getId());
+        return signUpUser.getId();
     }
 
     /**
@@ -67,12 +67,12 @@ public class UserService {
      * @return user with {@code Optional<T>} wrapper class,
      *      Optional is recommended to use for return result
      */
-    public AccountVo getAccount(final SignInVo vo) {
+    public SignInResultVo getAccount(final SignInVo vo) {
         final User signInUser = getUser(vo.accountId())
             .filter(user -> PasswordEncryptor.matches(vo.password(), user.getPassword()))
             .orElseThrow(InvalidAccountException::new);
 
-        return new AccountVo(signInUser.getAccountId(), signInUser.getUserType());
+        return SignInResultVo.of(signInUser);
     }
 
     /**
@@ -94,18 +94,15 @@ public class UserService {
      * @param password Password to change
      */
     @Transactional
-    public void changePassword(
+    public Long changePassword(
         final String accountId,
         final String password
     ) {
         final User user = getUser(accountId).orElseThrow(InvalidAccountException::new);
         final String encodedPassword = PasswordEncryptor.encrypt(password);
-        user.update(
-            encodedPassword,
-            user.getNickname(),
-            user.getProfileImagePath()
-        );
-        userRepository.save(user);
+        user.update(encodedPassword, user.getNickname(), user.getProfileImagePath());
+
+        return userRepository.save(user).getId();
     }
 
     /**
@@ -115,17 +112,11 @@ public class UserService {
      * @param nickname Nickname to change
      */
     @Transactional
-    public void changeNickname(
-        final String accountId,
-        final String nickname
-    ) {
+    public Long changeNickname(final String accountId, final String nickname) {
         final User user = getUser(accountId).orElseThrow(InvalidAccountException::new);
-        user.update(
-            user.getPassword(),
-            nickname,
-            user.getProfileImagePath()
-        );
-        userRepository.save(user);
+        user.update(user.getPassword(), nickname, user.getProfileImagePath());
+
+        return userRepository.save(user).getId();
     }
 
     /**

@@ -1,5 +1,7 @@
 package kr.texturized.muus.domain.vo;
 
+import kr.texturized.muus.presentation.api.request.SignUpRequest;
+
 /**
  * VO for Sign-up Service.
  *
@@ -12,5 +14,9 @@ public record SignUpVo(
     String password,
     String nickname
 ) {
+
+    public static SignUpVo of(SignUpRequest request) {
+        return new SignUpVo(request.accountId(), request.password(), request.nickname());
+    }
 
 }

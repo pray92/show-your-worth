@@ -25,8 +25,7 @@ public class SessionSignInOutService implements SignInOutService {
 
     @Override
     public String signIn(final String accountId) {
-        final String idValue = Optional.of(accountId)
-            .orElseThrow(SiginFailedException::new);
+        final String idValue = Optional.of(accountId).orElseThrow(SiginFailedException::new);
         httpSession.setAttribute(ACCOUNT_ID, idValue);
 
         log.info("Sign-in: {}", idValue);
@@ -36,8 +35,7 @@ public class SessionSignInOutService implements SignInOutService {
 
     @Override
     public void signOut() {
-        final String currentUser = Optional.of(getCurrentAccountId())
-            .orElseThrow(AlreadySignoutException::new);
+        final String currentUser = Optional.of(getCurrentAccountId()).orElseThrow(AlreadySignoutException::new);
 
         log.info("Sign-out: {}", currentUser);
 

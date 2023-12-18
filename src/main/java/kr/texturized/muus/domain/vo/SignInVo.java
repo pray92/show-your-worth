@@ -1,5 +1,7 @@
 package kr.texturized.muus.domain.vo;
 
+import kr.texturized.muus.presentation.api.request.SignInRequest;
+
 /**
  * VO for Sign-in Service.
  *
@@ -11,4 +13,7 @@ public record SignInVo(
     String password
 ) {
 
+    public static SignInVo of(SignInRequest request) {
+        return new SignInVo(request.accountId(), request.password());
+    }
 }

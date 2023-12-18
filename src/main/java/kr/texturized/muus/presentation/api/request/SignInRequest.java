@@ -9,8 +9,4 @@ public record SignInRequest(
     String accountId,
     String password
 ) {
-
-    public SignInVo toDto() {
-        return new SignInVo(accountId, password);
-    }
 }
