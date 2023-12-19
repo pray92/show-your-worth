@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Rest Controller for User.
@@ -203,5 +204,20 @@ public class UserController {
         if (null == value || !value.matches(pattern)) {
             throw new BusinessException(invalidMessage, ErrorCode.INVALID_INPUT_VALUE);
         }
+    }
+
+    /**
+     * 프로필 이미지를 변경하는 API
+     *
+     * @param imageFile 변경하려는 프로필 이미지
+     * @return 유저 테이블 ID
+     */
+    @PatchMapping("/change/profile-image")
+    @SignInCheck(userType = {UserTypeEnum.USER, UserTypeEnum.ADMIN})
+    public ResponseEntity<Long> changeAccountProfileImage(MultipartFile imageFile) {
+        final String accountId = userSignFacade.getCurrentAccountId();
+        final Long userId = userSignFacade.changeProfileImage(accountId, imageFile);
+
+        return ResponseEntity.status(HttpStatus.OK).body(userId);
     }
 }
