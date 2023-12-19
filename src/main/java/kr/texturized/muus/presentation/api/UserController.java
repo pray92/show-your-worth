@@ -17,13 +17,7 @@ import kr.texturized.muus.presentation.api.response.UserSignInResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -42,7 +36,7 @@ public class UserController {
      * @param accountId account id to use
      * @return Available response.
      */
-    @GetMapping("/validate/account")
+    @GetMapping("/validate-account")
     public ResponseEntity<String> validateAccount(@RequestParam final String accountId) {
         validatePattern(
             accountId,
@@ -60,7 +54,7 @@ public class UserController {
      * @param password to use
      * @return Available response.
      */
-    @GetMapping("/validate/password")
+    @GetMapping("/validate-password")
     public ResponseEntity<String> validatePassword(@RequestParam final String password) {
         validatePattern(
             password,
@@ -77,7 +71,7 @@ public class UserController {
      * @param nickname to use, it validates using bean validation.
      * @return Available response.
      */
-    @GetMapping("/validate/nickname")
+    @GetMapping("/validate-nickname")
     public ResponseEntity<String> validateNickname(@RequestParam final String nickname) {
         validatePattern(
             nickname,
@@ -139,7 +133,7 @@ public class UserController {
      * @param password Current password
      * @return Message for valid
      */
-    @GetMapping("/change/check/password")
+    @GetMapping("/check-password")
     @SignInCheck(userType = {UserTypeEnum.USER, UserTypeEnum.ADMIN})
     public ResponseEntity<String> checkPasswordBeforeChange(@RequestParam final String password) {
         final String accountId = userSignFacade.getCurrentAccountId();
@@ -155,11 +149,10 @@ public class UserController {
      * @param password Password
      * @return Message for change success
      */
-    @PatchMapping("/change/password")
+    @PatchMapping("/password")
     @SignInCheck(userType = {UserTypeEnum.USER, UserTypeEnum.ADMIN})
     public ResponseEntity<Long> changePassword(@RequestParam final String password) {
         final String accountId = userSignFacade.getCurrentAccountId();
-
         validatePattern(
             password,
             ValidationConstants.PASSWORD_PATTERN,
@@ -177,7 +170,7 @@ public class UserController {
      * @param nickname Nickname
      * @return Message for change success
      */
-    @PatchMapping("/change/nickname")
+    @PatchMapping("/nickname")
     @SignInCheck(userType = {UserTypeEnum.USER, UserTypeEnum.ADMIN})
     public ResponseEntity<Long> changeAccountNickname(@RequestParam final String nickname) {
         final String accountId = userSignFacade.getCurrentAccountId();
@@ -212,7 +205,7 @@ public class UserController {
      * @param imageFile 변경하려는 프로필 이미지
      * @return 유저 테이블 ID
      */
-    @PatchMapping("/change/profile-image")
+    @PatchMapping("/profile-image")
     @SignInCheck(userType = {UserTypeEnum.USER, UserTypeEnum.ADMIN})
     public ResponseEntity<Long> changeAccountProfileImage(MultipartFile imageFile) {
         final String accountId = userSignFacade.getCurrentAccountId();
