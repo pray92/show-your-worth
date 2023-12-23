@@ -37,9 +37,18 @@ public class BuskingService {
 
     private final PostImageStorage postImageStorage;
 
+    /**
+     * 버스킹을 생성해요.
+     *
+     * NOTE: 코드 정책으로 서비스 단계에서 엔티티를 생성하는 것으로 정했으나,
+     * Busking 엔티티의 ID가 있어야 초기화 가능한 키워드 및 이미지 엔티티의 한계로 인해
+     * Busking 엔티티만 서비스에서 생성하고, 해당 서브 엔티티들은 DAO에서 처리하게 하고 Raw Data를 DTO에 담아 보내요.
+     *
+     * @param vo 버스킹 생성에 필요한 데이터 집합 Vo
+     * @return 생성된 버스킹 ID
+     */
     @Transactional
     public Long create(final BuskingCreateVo vo) {
-
         final User user = userMapper.findById(vo.userId()).orElseThrow(() -> new UserNotFoundException(vo.userId()));
 
         final Busking busking = Busking.builder()
@@ -51,28 +60,9 @@ public class BuskingService {
                     .managedStartTime(vo.managedStartTime())
                     .managedEndTime(vo.managedEndTime())
                 .build();
-
-        final List<Keyword> keywords = vo.keywords().stream()
-                .map(keyword -> Keyword.builder()
-                            .id(new KeywordFk(busking.getId(), PostCategoryEnum.BUSKING))
-                            .keyword(keyword)
-                        .build())
-                .toList();
-
         final List<String> uploadedPaths = uploadImagesThenGetUploadedPaths(vo.userId(), vo.imageFiles());
-        final List<Image> images = new ArrayList<>(uploadedPaths.size());
-        for (int order = 0; order < uploadedPaths.size(); ++order) {
-             images.add(Image.builder()
-                        .id(ImageFk.builder()
-                             .postId(busking.getId())
-                             .postType(PostCategoryEnum.BUSKING)
-                             .uploadOrder(order)
-                             .build())
-                        .path(uploadedPaths.get(order))
-                     .build());
-        }
 
-        final BuskingCreateModelVo modelVo = BuskingCreateModelVo.of(busking, keywords, images);
+        final BuskingCreateModelVo modelVo = BuskingCreateModelVo.of(busking, vo.keywords(), uploadedPaths);
 
         return buskingDao.create(modelVo);
     }
