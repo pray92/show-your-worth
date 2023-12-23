@@ -4,6 +4,8 @@ import kr.texturized.muus.domain.entity.Busking;
 import kr.texturized.muus.domain.entity.Image;
 import kr.texturized.muus.domain.entity.Keyword;
 import kr.texturized.muus.domain.entity.PostCategoryEnum;
+import kr.texturized.muus.domain.entity.fk.ImageFk;
+import kr.texturized.muus.domain.entity.fk.KeywordFk;
 import kr.texturized.muus.domain.vo.BuskingCreateModelVo;
 import kr.texturized.muus.infrastructure.repository.BuskingRepository;
 import kr.texturized.muus.infrastructure.repository.ImageRepository;
@@ -35,8 +37,8 @@ public class BuskingDao {
     public Long create(final BuskingCreateModelVo vo) {
 
         saveBusking(vo.busking());
-        saveKeywords(vo.keywords(), PostCategoryEnum.BUSKING, vo.busking().getTitle());
-        saveImages(vo.images(), PostCategoryEnum.BUSKING, vo.busking().getTitle());
+        saveKeywords(vo.keywords(), vo.busking().getId(), PostCategoryEnum.BUSKING, vo.busking().getTitle());
+        saveImages(vo.imagePaths(), vo.busking().getId(), PostCategoryEnum.BUSKING, vo.busking().getTitle());
 
         return vo.busking().getId();
     }
@@ -54,46 +56,57 @@ public class BuskingDao {
     }
 
     /**
-     * 키워드 엔티티를 저장합니다. 게시물 정보는 키워드 엔티티에 있어요.
+     *
+     * 키워드 엔티티를 저장해요. 게시물 정보는 키워드 엔티티에 있어요.
      *
      * @param keywords 키워드 엔티티 목록
-     * @param category 키워드에 속한 게시물 타입
+     * @param postId 키워드가 속한 게시물 ID
+     * @param category 키워드가 속한 게시물 타입
      * @param title 게시물 제목
      */
     private void saveKeywords(
-        final List<Keyword> keywords,
+        final List<String> keywords,
+        final Long postId,
         final PostCategoryEnum category,
         final String title
     ) {
         keywords.forEach(keyword -> {
-            keywordRepository.save(keyword);
-
-            log.info("Keyword: {} for {} {} is added", keyword.getKeyword(), category, title);
+            keywordRepository.save(Keyword.builder()
+                    .id(new KeywordFk(postId, PostCategoryEnum.BUSKING))
+                    .keyword(keyword)
+                .build());
+            log.info("Keyword: {} for {} {} is added", keyword, category, title);
         });
     }
 
     /**
-     * 이미지 엔티티를 저장합니다. 게시물 정보는 이미지 엔티티에 있어요.
      *
-     * @param images 이미지 엔티티 목록
-     * @param category 이미지에 속한 게시물 타입
+     * 이미지 엔티티를 저장해요. 게시물 정보는 이미지 엔티티에 있어요.
+     *
+     * @param imagePaths 이미지 엔티티 목록
+     * @param postId 이미지가 속한 게시물 ID
+     * @param category 이미지가 속한 게시물 타입
      * @param title 게시물 제목
      */
     private void saveImages(
-            final List<Image> images,
+            final List<String> imagePaths,
+            final Long postId,
             final PostCategoryEnum category,
             final String title
     ) {
-        images.forEach(image -> {
-            imageRepository.save(image);
+        for (int order = 0; order < imagePaths.size(); ++order) {
+            final String imagePath = imagePaths.get(order);
+            imageRepository.save(Image.builder()
+                    .id(ImageFk.builder()
+                            .postId(postId)
+                            .postType(category)
+                            .uploadOrder(order)
+                        .build())
+                    .path(imagePath)
+                .build());
 
-            log.info("Image No. {} for {} {} is added in {}",
-                image.getId().getUploadOrder(),
-                category,
-                title,
-                image.getPath()
-            );
-        });
+            log.info("Image No. {} for {} {} is added in {}", order, category, title, imagePath);
+        }
     }
 }
 
