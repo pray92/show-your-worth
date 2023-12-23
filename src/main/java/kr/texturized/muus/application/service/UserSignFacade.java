@@ -1,6 +1,7 @@
 package kr.texturized.muus.application.service;
 
 import kr.texturized.muus.domain.entity.UserTypeEnum;
+import kr.texturized.muus.domain.vo.UserProfileResultVo;
 import kr.texturized.muus.domain.vo.UserSignInResultVo;
 import kr.texturized.muus.domain.vo.UserSignInVo;
 import kr.texturized.muus.domain.vo.UserSignUpVo;
@@ -50,6 +51,15 @@ public class UserSignFacade {
      */
     public void signOut() {
         signInOutService.signOut();
+    }
+
+    /**
+     * 프로필 정보를 불러와요.
+     *
+     * @param userId 조회할 유저의 테이블 ID
+     */
+    public UserProfileResultVo profile(final Long userId) {
+        return userService.profile(userId);
     }
 
     /**

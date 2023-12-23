@@ -26,9 +26,7 @@ import org.hibernate.annotations.CreationTimestamp;
 @ToString(of = {"accountId", "nickname"})
 public class User {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(updatable = false)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(unique = true, nullable = false, updatable = false)

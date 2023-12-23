@@ -23,13 +23,11 @@ import org.hibernate.annotations.CreationTimestamp;
  * Entity for Busking.
  */
 @Entity
-@Table(name = "busking")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class Busking {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
