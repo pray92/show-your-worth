@@ -8,6 +8,7 @@ import kr.texturized.muus.common.error.exception.ErrorCode;
 import kr.texturized.muus.common.util.SignInCheck;
 import kr.texturized.muus.common.util.ValidationConstants;
 import kr.texturized.muus.domain.entity.UserTypeEnum;
+import kr.texturized.muus.domain.vo.UserProfileResultVo;
 import kr.texturized.muus.domain.vo.UserSignInResultVo;
 import kr.texturized.muus.domain.vo.UserSignInVo;
 import kr.texturized.muus.domain.vo.UserSignUpVo;
@@ -128,6 +129,18 @@ public class UserController {
     }
 
     /**
+     * 유저의 프로필을 조회해요.
+     *
+     * @param userId 조회할 유저의 테이블 ID
+     */
+    @GetMapping("/{userId}")
+    public ResponseEntity<UserProfileResultVo> profile(@PathVariable final Long userId) {
+        final UserProfileResultVo resultVo = userSignFacade.profile(userId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(resultVo);
+    }
+
+    /**
      * Check password matches before change.
      *
      * @param password Current password
@@ -200,7 +213,7 @@ public class UserController {
     }
 
     /**
-     * 프로필 이미지를 변경하는 API
+     * 프로필 이미지를 변경해요.
      *
      * @param imageFile 변경하려는 프로필 이미지
      * @return 유저 테이블 ID

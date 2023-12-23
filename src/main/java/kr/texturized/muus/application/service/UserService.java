@@ -8,6 +8,8 @@ import kr.texturized.muus.common.storage.PostImageStorage;
 import kr.texturized.muus.common.util.PasswordEncryptor;
 import kr.texturized.muus.domain.entity.User;
 import kr.texturized.muus.domain.entity.UserTypeEnum;
+import kr.texturized.muus.domain.exception.UserNotFoundException;
+import kr.texturized.muus.domain.vo.UserProfileResultVo;
 import kr.texturized.muus.domain.vo.UserSignInResultVo;
 import kr.texturized.muus.domain.vo.UserSignInVo;
 import kr.texturized.muus.domain.vo.UserSignUpVo;
@@ -58,6 +60,16 @@ public class UserService {
             }).orElseThrow(InvalidAccountException::new);
 
         return signUpUser.getId();
+    }
+
+    /**
+     * 유저 프로필을 반환해요.
+     *
+     * @param userId 대상 유저 테이블 ID
+     * @return UI에서 유저 식별을 위한 기본적인 프로필 정보 Vo
+     */
+    public UserProfileResultVo profile(final Long userId) {
+        return userMapper.findProfile(userId).orElseThrow(() -> new UserNotFoundException(userId));
     }
 
     /**
@@ -180,4 +192,5 @@ public class UserService {
     public UserTypeEnum getAccountIdUserType(final String accountId) {
         return userMapper.findUserTypeByAccountId(accountId);
     }
+
 }

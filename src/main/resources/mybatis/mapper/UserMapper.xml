@@ -7,7 +7,7 @@
     select exists (
         select users.id
         from users
-        where users.account_id = #{AccountId}
+        where users.account_id = #{accountId}
     );
   </select>
 
@@ -50,6 +50,17 @@
         user_type
     from users
     where users.account_id = #{accountId}
+  </select>
+
+  <select id="findProfile" parameterType="Long" resultType="kr.texturized.muus.domain.vo.UserProfileResultVo">
+    select
+      u.nickname,
+      u.profile_image_path,
+      b.id
+    from users u
+      left outer join busking b
+      on u.id = b.host_id
+    where users.id = #{userId}
   </select>
 
 </mapper>
