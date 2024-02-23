@@ -46,8 +46,8 @@ class BuskingRepositoryTest extends IntegrationTest {
             .description("Hello fells")
             .latitude(27.0)
             .longitude(120.0)
-            .managedStartTime(LocalDateTime.of(2023, Month.DECEMBER, 25, 12, 0))
-            .managedEndTime(LocalDateTime.of(2023, Month.DECEMBER, 25, 13, 0))
+            .managedStartTime(LocalDateTime.now().plusHours(1L))
+            .managedEndTime(LocalDateTime.now().plusHours(2L))
         .build());
 
         log.info("Busking: {}", busking);

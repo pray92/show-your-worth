@@ -4,15 +4,21 @@ import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import kr.texturized.muus.dao.BuskingDao;
 import kr.texturized.muus.domain.entity.Busking;
 import kr.texturized.muus.domain.entity.User;
 import kr.texturized.muus.domain.entity.UserTypeEnum;
+import kr.texturized.muus.domain.vo.BuskingCreateModelVo;
+import kr.texturized.muus.domain.vo.BuskingProfileResultVo;
 import kr.texturized.muus.domain.vo.BuskingSearchResultVo;
-import kr.texturized.muus.infrastructure.repository.BuskingRepository;
 import kr.texturized.muus.infrastructure.repository.UserRepository;
 import kr.texturized.muus.test.IntegrationTest;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,14 +30,18 @@ class BuskingMapperTest extends IntegrationTest {
     private UserRepository userRepository;
 
     @Autowired
-    private BuskingRepository buskingRepository;
+    private BuskingDao buskingDao;
 
     @Autowired
     private BuskingMapper buskingMapper;
 
+    private User saveUser = null;
+    private Long buskingId1 = 0L;
+    private Long buskingId2 = 0L;
+
     @BeforeEach
     void beforeEach() {
-        User saveUser = userRepository.save(User.builder()
+        saveUser = userRepository.save(User.builder()
                 .accountId("redgem92")
                 .password("asdfqwerzxcv")
                 .nickname("HoneyFist")
@@ -39,34 +49,42 @@ class BuskingMapperTest extends IntegrationTest {
                 .userType(UserTypeEnum.USER)
             .build());
 
-        saveBusking(
-            saveUser,
-            27.0, 120.0,
-            LocalDateTime.of(2023, Month.DECEMBER, 25, 12, 0),
-            LocalDateTime.of(2023, Month.DECEMBER, 25, 13, 0)
+        buskingId1 = saveBusking(
+                saveUser,
+                27.0, 120.0,
+                LocalDateTime.now().plusDays(1L),
+                LocalDateTime.now().plusDays(1L).plusHours(1L),
+                Arrays.asList("a1", "a2", "a3"),
+                new ArrayList<>()
         );
-        saveBusking(
-            saveUser,
-            27.5, 120.5,
-            LocalDateTime.of(2023, Month.DECEMBER, 31, 12, 0),
-            LocalDateTime.of(2023, Month.DECEMBER, 31, 13, 0)
+        buskingId2 = saveBusking(
+                saveUser,
+                27.5, 120.5,
+                LocalDateTime.now().plusDays(1L),
+                LocalDateTime.now().plusDays(1L).plusHours(1L),
+                Arrays.asList("b1", "b2", "b3"),
+                new ArrayList<>()
         );
     }
 
-    Busking saveBusking(
+    private Long saveBusking(
         User user,
         double latitude, double longitude,
-        LocalDateTime start, LocalDateTime end
+        LocalDateTime start, LocalDateTime end,
+        List<String> keywords, List<String> imagePaths
     ) {
-        return buskingRepository.save(Busking.builder()
-                .host(user)
-                .title("Test")
-                .description("Test")
-                .latitude(latitude)
-                .longitude(longitude)
-                .managedStartTime(start)
-                .managedEndTime(end)
-            .build());
+        return buskingDao.create(new BuskingCreateModelVo(
+                Busking.builder()
+                        .host(user)
+                        .title("Test")
+                        .description("Test")
+                        .latitude(latitude)
+                        .longitude(longitude)
+                        .managedStartTime(start)
+                        .managedEndTime(end)
+                    .build(),
+                keywords,
+                imagePaths));
     }
 
     @Test
@@ -86,5 +104,9 @@ class BuskingMapperTest extends IntegrationTest {
             0.5
         );
         assertThat(buskings.size()).isEqualTo(1);
+    }
+
+    @Test
+    void getBuskingProfile() {
     }
 }
