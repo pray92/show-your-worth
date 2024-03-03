@@ -39,19 +39,6 @@
     <collection property="imagePaths" javaType="java.util.ArrayList" ofType="String">
       <id column="path"/>
     </collection>
-    <!--<constructor>
-      <idArg column="id" javaType="Long" />
-      <arg column="nickname" javaType="String" />
-      <arg column="profile_image_path" javaType="String" />
-      <arg column="title" javaType="String" />
-      <arg column="description" javaType="String" />
-      <arg column="latitude" javaType="Double" />
-      <arg column="longitude" javaType="Double" />
-      <arg column="managed_start_time" javaType="java.time.LocalDateTime" />
-      <arg column="managed_end_time" javaType="java.time.LocalDateTime" />
-      <arg column="end_time" javaType="java.time.LocalDateTime" />
-      <arg column="keyword" javaType="java.util.List" select="findBuskingKeywords" name="keywords"/>
-    </constructor>-->
   </resultMap>
   <select id="profile" resultMap="BuskingProfileResultVo">
     select
