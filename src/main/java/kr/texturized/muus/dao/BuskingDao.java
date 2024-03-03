@@ -5,7 +5,6 @@ import kr.texturized.muus.domain.entity.Image;
 import kr.texturized.muus.domain.entity.Keyword;
 import kr.texturized.muus.domain.entity.PostCategoryEnum;
 import kr.texturized.muus.domain.entity.fk.ImageFk;
-import kr.texturized.muus.domain.entity.fk.KeywordFk;
 import kr.texturized.muus.domain.vo.BuskingCreateModelVo;
 import kr.texturized.muus.infrastructure.repository.BuskingRepository;
 import kr.texturized.muus.infrastructure.repository.ImageRepository;
@@ -72,7 +71,8 @@ public class BuskingDao {
     ) {
         keywords.forEach(keyword -> {
             keywordRepository.save(Keyword.builder()
-                    .id(new KeywordFk(postId, PostCategoryEnum.BUSKING))
+                    .postId(postId)
+                    .postType(category)
                     .keyword(keyword)
                 .build());
             log.info("Keyword: {} for {} {} is added", keyword, category, title);

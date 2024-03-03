@@ -1,10 +1,10 @@
 package kr.texturized.muus.domain.entity;
 
-import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import kr.texturized.muus.domain.entity.fk.KeywordFk;
+import javax.validation.constraints.NotNull;
+
+import kr.texturized.muus.infrastructure.repository.converter.type.PostCategoryConverter;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,8 +18,18 @@ import lombok.NoArgsConstructor;
 @Getter
 public class Keyword {
 
-    @EmbeddedId
-    private KeywordFk id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @NotNull
+    @Column(name = "post_id")
+    private Long postId;
+
+    @NotNull
+    @Convert(converter = PostCategoryConverter.class)
+    @Column(nullable = false, updatable = false)
+    private PostCategoryEnum postType;
 
     @NotBlank
     @Column(name = "keyword", length = 15)
@@ -27,9 +37,11 @@ public class Keyword {
 
     @Builder
     public Keyword(
-        final KeywordFk id,
+        final Long postId,
+        final PostCategoryEnum postType,
         final String keyword) {
-        this.id = id;
+        this.postId = postId;
+        this.postType = postType;
         this.keyword = keyword;
     }
 }
