@@ -9,7 +9,6 @@
       <arg column="longitude" javaType="Double" />
     </constructor>
   </resultMap>
-
   <select id="search" resultMap="BuskingSearchResultVo">
     select id, latitude, longitude
     from busking
@@ -21,5 +20,64 @@
         -->
         and latitude between #{latitude} - #{width} * 0.5 and #{latitude} + #{width} * 0.5
         and longitude between #{longitude} - #{height} * 0.5 and #{longitude} + #{height} * 0.5
+  </select>
+
+  <resultMap id="BuskingProfileResultVo" type="kr.texturized.muus.domain.vo.BuskingProfileResultVo">
+    <id property="userId" column="id"/>
+    <result property="nickname" column="nickname"/>
+    <result property="profileImagePath" column="profile_image_path"/>
+    <result property="title" column="title"/>
+    <result property="description" column="description"/>
+    <result property="latitude" column="latitude"/>
+    <result property="longitude" column="longitude"/>
+    <result property="managedStartTime" column="managed_start_time"/>
+    <result property="managedEndTime" column="managed_end_time"/>
+    <result property="endTime" column="end_time"/>
+    <collection property="keywords" javaType="java.util.ArrayList" ofType="String">
+      <id column="keyword"/>
+    </collection>
+    <collection property="imagePaths" javaType="java.util.ArrayList" ofType="String">
+      <id column="path"/>
+    </collection>
+    <!--<constructor>
+      <idArg column="id" javaType="Long" />
+      <arg column="nickname" javaType="String" />
+      <arg column="profile_image_path" javaType="String" />
+      <arg column="title" javaType="String" />
+      <arg column="description" javaType="String" />
+      <arg column="latitude" javaType="Double" />
+      <arg column="longitude" javaType="Double" />
+      <arg column="managed_start_time" javaType="java.time.LocalDateTime" />
+      <arg column="managed_end_time" javaType="java.time.LocalDateTime" />
+      <arg column="end_time" javaType="java.time.LocalDateTime" />
+      <arg column="keyword" javaType="java.util.List" select="findBuskingKeywords" name="keywords"/>
+    </constructor>-->
+  </resultMap>
+  <select id="profile" resultMap="BuskingProfileResultVo">
+    select
+      u.id,
+      u.nickname,
+      u.profile_image_path,
+      b.title,
+      b.description,
+      b.latitude,
+      b.longitude,
+      b.managed_start_time,
+      b.managed_end_time,
+      b.end_time,
+      k.keyword,
+      i.path
+    from
+      busking b
+      left join
+        users u on b.host_id = u.id
+      left join
+        keyword k on b.id = k.post_id and k.post_type = 1 <!-- 1: Busking, 2: Feed, 3: Notice -->
+      left join
+        image i on b.id = i.post_id and i.post_type = 1 <!-- 1: Busking, 2: Feed, 3: Notice -->
+    where
+      b.id = #{buskingId}
+    order by
+      i.upload_order asc
   </select>
 </mapper>

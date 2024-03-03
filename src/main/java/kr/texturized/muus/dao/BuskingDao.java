@@ -105,7 +105,7 @@ public class BuskingDao {
                     .path(imagePath)
                 .build());
 
-            log.info("Image No. {} for {} {} is added in {}", order, category, title, imagePath);
+            log.info("Image No. {} for {} {} is added named by [{}]", order, category, title, imagePath);
         }
     }
 }
