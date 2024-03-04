@@ -16,6 +16,10 @@ spring:
         dialect: org.hibernate.dialect.H2Dialect
         format_sql: true
         use_sql_comments: true
+    defer-datasource-initialization: true         # Hibernate 초기화 후 data.sql 실행
+  sql:
+    init:
+      mode: always
   devtools:
     add-properties: true
   session:
