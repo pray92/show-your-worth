@@ -99,6 +99,12 @@ public class BuskingService {
         return buskingMapper.search(latitude, longitude, latitudeRange, longitudeRange);
     }
 
+    /**
+     * 버스킹 프로필 조회
+     *
+     * @param buskingId 조회할 버스킹 ID
+     * @return 버스킹 프로필 조회 결과 VO
+     */
     public BuskingProfileResultVo profile(final Long buskingId) {
         return buskingMapper.profile(buskingId).orElseThrow(() -> new BuskingProfileNotFoundException(buskingId));
     }
