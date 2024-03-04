@@ -2,7 +2,7 @@ package kr.texturized.muus.presentation.api;
 
 import javax.validation.Valid;
 
-import kr.texturized.muus.application.service.UserSignFacade;
+import kr.texturized.muus.application.UserSignFacade;
 import kr.texturized.muus.common.error.exception.BusinessException;
 import kr.texturized.muus.common.error.exception.ErrorCode;
 import kr.texturized.muus.common.util.SignInCheck;

@@ -3,7 +3,7 @@ package kr.texturized.muus.common.util;
 import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import kr.texturized.muus.application.service.UserSignFacade;
+import kr.texturized.muus.application.UserSignFacade;
 import kr.texturized.muus.application.service.exception.AuthorizationException;
 import kr.texturized.muus.domain.entity.UserTypeEnum;
 import lombok.RequiredArgsConstructor;
