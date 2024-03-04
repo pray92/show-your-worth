@@ -6,6 +6,7 @@ import kr.texturized.muus.common.coordinate.CoordinateCalculator;
 import kr.texturized.muus.common.storage.PostImageStorage;
 import kr.texturized.muus.dao.BuskingDao;
 import kr.texturized.muus.domain.entity.*;
+import kr.texturized.muus.domain.exception.BuskingProfileNotFoundException;
 import kr.texturized.muus.domain.exception.UserNotFoundException;
 import kr.texturized.muus.domain.vo.*;
 import kr.texturized.muus.infrastructure.mapper.BuskingMapper;
@@ -98,4 +99,7 @@ public class BuskingService {
         return buskingMapper.search(latitude, longitude, latitudeRange, longitudeRange);
     }
 
+    public BuskingProfileResultVo profile(final Long buskingId) {
+        return buskingMapper.profile(buskingId).orElseThrow(() -> new BuskingProfileNotFoundException(buskingId));
+    }
 }

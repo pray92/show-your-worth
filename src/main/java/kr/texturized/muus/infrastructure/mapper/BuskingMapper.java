@@ -28,8 +28,8 @@ public interface BuskingMapper {
     /**
      * 버스킹 프로필을 조회해요.
      *
-     * @param id 버스킹 ID
+     * @param buskingId 버스킹 ID
      * @return 호스팅 유저의 정보와 버스킹 프로필 정보 Vo
      */
-    Optional<BuskingProfileResultVo> profile(Long id);
+    Optional<BuskingProfileResultVo> profile(Long buskingId);
 }
