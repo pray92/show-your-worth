@@ -4,8 +4,6 @@ import kr.texturized.muus.domain.entity.Busking;
 import kr.texturized.muus.domain.entity.Image;
 import kr.texturized.muus.domain.entity.Keyword;
 import kr.texturized.muus.domain.entity.PostCategoryEnum;
-import kr.texturized.muus.domain.entity.fk.ImageFk;
-import kr.texturized.muus.domain.entity.fk.KeywordFk;
 import kr.texturized.muus.domain.vo.BuskingCreateModelVo;
 import kr.texturized.muus.infrastructure.repository.BuskingRepository;
 import kr.texturized.muus.infrastructure.repository.ImageRepository;
@@ -72,7 +70,8 @@ public class BuskingDao {
     ) {
         keywords.forEach(keyword -> {
             keywordRepository.save(Keyword.builder()
-                    .id(new KeywordFk(postId, PostCategoryEnum.BUSKING))
+                    .postId(postId)
+                    .postType(category)
                     .keyword(keyword)
                 .build());
             log.info("Keyword: {} for {} {} is added", keyword, category, title);
@@ -97,15 +96,13 @@ public class BuskingDao {
         for (int order = 0; order < imagePaths.size(); ++order) {
             final String imagePath = imagePaths.get(order);
             imageRepository.save(Image.builder()
-                    .id(ImageFk.builder()
-                            .postId(postId)
-                            .postType(category)
-                            .uploadOrder(order)
-                        .build())
+                    .postId(postId)
+                    .postType(category)
+                    .uploadOrder(order)
                     .path(imagePath)
                 .build());
 
-            log.info("Image No. {} for {} {} is added in {}", order, category, title, imagePath);
+            log.info("Image No. {} for {} {} is added named by [{}]", order, category, title, imagePath);
         }
     }
 }

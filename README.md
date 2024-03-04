@@ -188,7 +188,7 @@
 
 # 📄 ERD
 
-![µ'us - ERD](https://github.com/pray92/show-your-worth/assets/11500877/361b4ba7-3718-4aa1-b78c-1873ac5b1e9b)
+![mu-us-erd](https://github.com/pray92/show-your-worth/assets/11500877/8ef99430-fefb-470d-905e-e7a05441b60e)
 
 # 🌲 Git Branch Strategy
 

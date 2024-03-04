@@ -2,12 +2,13 @@ package kr.texturized.muus.presentation.api;
 
 import javax.validation.Valid;
 
-import kr.texturized.muus.application.service.UserSignFacade;
+import kr.texturized.muus.application.UserSignFacade;
 import kr.texturized.muus.common.error.exception.BusinessException;
 import kr.texturized.muus.common.error.exception.ErrorCode;
 import kr.texturized.muus.common.util.SignInCheck;
 import kr.texturized.muus.common.util.ValidationConstants;
 import kr.texturized.muus.domain.entity.UserTypeEnum;
+import kr.texturized.muus.domain.vo.UserProfileResultVo;
 import kr.texturized.muus.domain.vo.UserSignInResultVo;
 import kr.texturized.muus.domain.vo.UserSignInVo;
 import kr.texturized.muus.domain.vo.UserSignUpVo;
@@ -17,13 +18,8 @@ import kr.texturized.muus.presentation.api.response.UserSignInResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Rest Controller for User.
@@ -41,7 +37,7 @@ public class UserController {
      * @param accountId account id to use
      * @return Available response.
      */
-    @GetMapping("/validate/account")
+    @GetMapping("/validate-account")
     public ResponseEntity<String> validateAccount(@RequestParam final String accountId) {
         validatePattern(
             accountId,
@@ -59,7 +55,7 @@ public class UserController {
      * @param password to use
      * @return Available response.
      */
-    @GetMapping("/validate/password")
+    @GetMapping("/validate-password")
     public ResponseEntity<String> validatePassword(@RequestParam final String password) {
         validatePattern(
             password,
@@ -76,7 +72,7 @@ public class UserController {
      * @param nickname to use, it validates using bean validation.
      * @return Available response.
      */
-    @GetMapping("/validate/nickname")
+    @GetMapping("/validate-nickname")
     public ResponseEntity<String> validateNickname(@RequestParam final String nickname) {
         validatePattern(
             nickname,
@@ -133,12 +129,24 @@ public class UserController {
     }
 
     /**
+     * 유저의 프로필을 조회해요.
+     *
+     * @param userId 조회할 유저의 테이블 ID
+     */
+    @GetMapping("/{userId}")
+    public ResponseEntity<UserProfileResultVo> profile(@PathVariable final Long userId) {
+        final UserProfileResultVo resultVo = userSignFacade.profile(userId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(resultVo);
+    }
+
+    /**
      * Check password matches before change.
      *
      * @param password Current password
      * @return Message for valid
      */
-    @GetMapping("/change/check/password")
+    @GetMapping("/check-password")
     @SignInCheck(userType = {UserTypeEnum.USER, UserTypeEnum.ADMIN})
     public ResponseEntity<String> checkPasswordBeforeChange(@RequestParam final String password) {
         final String accountId = userSignFacade.getCurrentAccountId();
@@ -154,11 +162,10 @@ public class UserController {
      * @param password Password
      * @return Message for change success
      */
-    @PatchMapping("/change/password")
+    @PatchMapping("/password")
     @SignInCheck(userType = {UserTypeEnum.USER, UserTypeEnum.ADMIN})
     public ResponseEntity<Long> changePassword(@RequestParam final String password) {
         final String accountId = userSignFacade.getCurrentAccountId();
-
         validatePattern(
             password,
             ValidationConstants.PASSWORD_PATTERN,
@@ -171,34 +178,12 @@ public class UserController {
     }
 
     /**
-     * Check nickname validation and duplication before change.
-     *
-     * @param nickname Nickname to check
-     * @return Message for valid
-     */
-    @GetMapping("/change/check/nickname")
-    @SignInCheck(userType = {UserTypeEnum.USER, UserTypeEnum.ADMIN})
-    public ResponseEntity<String> checkNicknameBeforeChange(@RequestParam final String nickname) {
-        userSignFacade.getCurrentAccountId();     // Use for authorization
-
-        validatePattern(
-            nickname,
-            ValidationConstants.NICKNAME_PATTERN,
-            ValidationConstants.NICKNAME_PATTERN_INVALID_MESSAGE
-        );
-
-        userSignFacade.checkDuplicatedNickname(nickname);
-
-        return ResponseEntity.status(HttpStatus.OK).body("바꿀 수 있는 닉네임이에요.");
-    }
-
-    /**
      * Change account's nickname.
      *
      * @param nickname Nickname
      * @return Message for change success
      */
-    @PatchMapping("/change/nickname")
+    @PatchMapping("/nickname")
     @SignInCheck(userType = {UserTypeEnum.USER, UserTypeEnum.ADMIN})
     public ResponseEntity<Long> changeAccountNickname(@RequestParam final String nickname) {
         final String accountId = userSignFacade.getCurrentAccountId();
@@ -225,5 +210,20 @@ public class UserController {
         if (null == value || !value.matches(pattern)) {
             throw new BusinessException(invalidMessage, ErrorCode.INVALID_INPUT_VALUE);
         }
+    }
+
+    /**
+     * 프로필 이미지를 변경해요.
+     *
+     * @param imageFile 변경하려는 프로필 이미지
+     * @return 유저 테이블 ID
+     */
+    @PatchMapping("/profile-image")
+    @SignInCheck(userType = {UserTypeEnum.USER, UserTypeEnum.ADMIN})
+    public ResponseEntity<Long> changeAccountProfileImage(MultipartFile imageFile) {
+        final String accountId = userSignFacade.getCurrentAccountId();
+        final Long userId = userSignFacade.changeProfileImage(accountId, imageFile);
+
+        return ResponseEntity.status(HttpStatus.OK).body(userId);
     }
 }

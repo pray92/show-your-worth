@@ -3,6 +3,7 @@ package kr.texturized.muus.infrastructure.mapper;
 import java.util.Optional;
 import kr.texturized.muus.domain.entity.User;
 import kr.texturized.muus.domain.entity.UserTypeEnum;
+import kr.texturized.muus.domain.vo.UserProfileResultVo;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
@@ -20,4 +21,6 @@ public interface UserMapper {
     Optional<User> findById(final Long userId);
 
     UserTypeEnum findUserTypeByAccountId(final String accountId);
+
+    Optional<UserProfileResultVo> findProfile(final Long userId);
 }

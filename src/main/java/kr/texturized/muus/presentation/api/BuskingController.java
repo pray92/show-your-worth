@@ -4,11 +4,13 @@ import java.util.List;
 import javax.validation.Valid;
 import kr.texturized.muus.application.service.BuskingService;
 import kr.texturized.muus.common.coordinate.RangeChecker;
+import kr.texturized.muus.domain.vo.BuskingProfileResultVo;
 import kr.texturized.muus.domain.vo.BuskingSearchResultVo;
 import kr.texturized.muus.domain.vo.BuskingSearchVo;
 import kr.texturized.muus.domain.vo.BuskingCreateVo;
 import kr.texturized.muus.presentation.api.request.BuskingCreateRequest;
 import kr.texturized.muus.presentation.api.request.BuskingSearchRequest;
+import kr.texturized.muus.presentation.api.response.BuskingProfileResponse;
 import kr.texturized.muus.presentation.api.response.BuskingSearchResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -63,7 +65,7 @@ public class BuskingController {
      * @return 활동 예정 및 진행 중인 버스킹 목록
      */
     @GetMapping
-    public ResponseEntity<BuskingSearchResponse> search(@RequestBody BuskingSearchRequest request) {
+    public ResponseEntity<BuskingSearchResponse> search(@RequestBody final BuskingSearchRequest request) {
         rangeChecker.validateRange(request.latitude(), request.longitude(), request.widthMeter(), request.heightMeter());
 
         final BuskingSearchVo vo = BuskingSearchVo.of(request);
@@ -72,4 +74,16 @@ public class BuskingController {
         return ResponseEntity.status(HttpStatus.OK).body(BuskingSearchResponse.of(resultVo));
     }
 
+    /**
+     * 버스킹 프로필 조회
+     *
+     * @param buskingId 프로필 조회할 버스킹 ID
+     * @return 버스킹 프로필 Vo
+     */
+    @GetMapping("/{buskingId}")
+    public ResponseEntity<BuskingProfileResponse> profile(@PathVariable final Long buskingId) {
+        final BuskingProfileResultVo resultVo = buskingService.profile(buskingId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(BuskingProfileResponse.of(resultVo));
+    }
 }

@@ -1,11 +1,15 @@
-package kr.texturized.muus.application.service;
+package kr.texturized.muus.application;
 
+import kr.texturized.muus.application.service.SignInOutService;
+import kr.texturized.muus.application.service.UserService;
 import kr.texturized.muus.domain.entity.UserTypeEnum;
+import kr.texturized.muus.domain.vo.UserProfileResultVo;
 import kr.texturized.muus.domain.vo.UserSignInResultVo;
 import kr.texturized.muus.domain.vo.UserSignInVo;
 import kr.texturized.muus.domain.vo.UserSignUpVo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 
@@ -52,11 +56,20 @@ public class UserSignFacade {
     }
 
     /**
+     * 프로필 정보를 불러와요.
+     *
+     * @param userId 조회할 유저의 테이블 ID
+     */
+    public UserProfileResultVo profile(final Long userId) {
+        return userService.profile(userId);
+    }
+
+    /**
      * 회원가입하려는 계정 ID 중복 여부를 확인해요.
      *
      * @param accountId 회원가입하려는 계정 ID
      */
-    public void checkDuplicatedAccountId(String accountId) {
+    public void checkDuplicatedAccountId(final String accountId) {
         userService.checkDuplicatedAccountId(accountId);
     }
 
@@ -65,7 +78,7 @@ public class UserSignFacade {
      *
      * @param nickname 확인 닉네임
      */
-    public void checkDuplicatedNickname(String nickname) {
+    public void checkDuplicatedNickname(final String nickname) {
         userService.checkDuplicatedNickname(nickname);
     }
 
@@ -77,7 +90,7 @@ public class UserSignFacade {
      * @return 성공 시 테이블 ID
      */
     @Transactional
-    public Long changeNickname(String accountId, String nickname) {
+    public Long changeNickname(final String accountId, final String nickname) {
         return userService.changeNickname(accountId, nickname);
     }
 
@@ -103,6 +116,18 @@ public class UserSignFacade {
     }
 
     /**
+     * 대상 계정의 프로필 이미지를 변경해요.
+     *
+     * @param accountId 계정 ID
+     * @param imageFile 프로필 이미지
+     * @return 변경된 유저 ID
+     */
+    @Transactional
+    public Long changeProfileImage(final String accountId, final MultipartFile imageFile) {
+        return userService.changeProfileImage(accountId, imageFile);
+    }
+
+    /**
      * 클라이언트의 계정 ID를 반환해요.
      *
      * @return 클라이언트의 계정 ID
@@ -117,7 +142,7 @@ public class UserSignFacade {
      * @param accountId 계정 ID
      * @return 계정의 유저 타입
      */
-    public UserTypeEnum getAccountIdUserType(String accountId) {
+    public UserTypeEnum getAccountIdUserType(final String accountId) {
         return userService.getAccountIdUserType(accountId);
     }
 }

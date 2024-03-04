@@ -3,13 +3,16 @@ package kr.texturized.muus.infrastructure.mapper;
 import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDateTime;
-import java.time.Month;
+import java.util.Arrays;
 import java.util.List;
+
+import kr.texturized.muus.dao.BuskingDao;
 import kr.texturized.muus.domain.entity.Busking;
 import kr.texturized.muus.domain.entity.User;
 import kr.texturized.muus.domain.entity.UserTypeEnum;
+import kr.texturized.muus.domain.vo.BuskingCreateModelVo;
+import kr.texturized.muus.domain.vo.BuskingProfileResultVo;
 import kr.texturized.muus.domain.vo.BuskingSearchResultVo;
-import kr.texturized.muus.infrastructure.repository.BuskingRepository;
 import kr.texturized.muus.infrastructure.repository.UserRepository;
 import kr.texturized.muus.test.IntegrationTest;
 import lombok.extern.slf4j.Slf4j;
@@ -24,49 +27,74 @@ class BuskingMapperTest extends IntegrationTest {
     private UserRepository userRepository;
 
     @Autowired
-    private BuskingRepository buskingRepository;
+    private BuskingDao buskingDao;
 
     @Autowired
     private BuskingMapper buskingMapper;
 
+    private User saveUser = null;
+
+    private Long buskingId1 = 0L;
+    private final Double latitude1 = 27.00001;
+    private final Double longitude1 = 120.00001;
+    private final LocalDateTime managedStartTime1 = LocalDateTime.now().plusDays(1L);
+    private final LocalDateTime managedEndTime1 = LocalDateTime.now().plusDays(1L).plusHours(1L);
+    private final List<String> keyword1 = Arrays.asList("a1", "a2", "a3");
+    private final List<String> imagePaths1 = Arrays.asList("image1", "image2", "image3");
+
+    private Long buskingId2 = 0L;
+    private final Double latitude2 = 27.51234;
+    private final Double longitude2 = 120.51234;
+    private final LocalDateTime managedStartTime2 = LocalDateTime.now().plusDays(2L);
+    private final LocalDateTime managedEndTime2 = LocalDateTime.now().plusDays(2L).plusHours(1L);
+    private final List<String> keyword2 = Arrays.asList("b1", "b2", "b3");
+    private final List<String> imagePaths2 = Arrays.asList("image3", "image4", "image5");
+
     @BeforeEach
     void beforeEach() {
-        User saveUser = userRepository.save(User.builder()
+        saveUser = userRepository.save(User.builder()
                 .accountId("redgem92")
                 .password("asdfqwerzxcv")
                 .nickname("HoneyFist")
-                //.email("redgem92@gmail.com")
                 .userType(UserTypeEnum.USER)
             .build());
 
-        saveBusking(
-            saveUser,
-            27.0, 120.0,
-            LocalDateTime.of(2023, Month.DECEMBER, 25, 12, 0),
-            LocalDateTime.of(2023, Month.DECEMBER, 25, 13, 0)
+        buskingId1 = saveBusking(
+                saveUser,
+                latitude1, longitude1,
+                managedStartTime1,
+                managedEndTime1,
+                keyword1,
+                imagePaths1
         );
-        saveBusking(
-            saveUser,
-            27.5, 120.5,
-            LocalDateTime.of(2023, Month.DECEMBER, 31, 12, 0),
-            LocalDateTime.of(2023, Month.DECEMBER, 31, 13, 0)
+        buskingId2 = saveBusking(
+                saveUser,
+                latitude2, longitude2,
+                managedStartTime2,
+                managedEndTime2,
+                keyword2,
+                imagePaths2
         );
     }
 
-    Busking saveBusking(
+    private Long saveBusking(
         User user,
         double latitude, double longitude,
-        LocalDateTime start, LocalDateTime end
+        LocalDateTime start, LocalDateTime end,
+        List<String> keywords, List<String> imagePaths
     ) {
-        return buskingRepository.save(Busking.builder()
-                .host(user)
-                .title("Test")
-                .description("Test")
-                .latitude(latitude)
-                .longitude(longitude)
-                .managedStartTime(start)
-                .managedEndTime(end)
-            .build());
+        return buskingDao.create(new BuskingCreateModelVo(
+                Busking.builder()
+                        .host(user)
+                        .title("Test")
+                        .description("Test")
+                        .latitude(latitude)
+                        .longitude(longitude)
+                        .managedStartTime(start)
+                        .managedEndTime(end)
+                    .build(),
+                keywords,
+                imagePaths));
     }
 
     @Test
@@ -74,8 +102,8 @@ class BuskingMapperTest extends IntegrationTest {
         List<BuskingSearchResultVo> buskings = buskingMapper.search(
             27.0,
             120.0,
-            1.0,
-            1.0
+            1.5,
+            1.5
         );
         assertThat(buskings.size()).isEqualTo(2);
 
@@ -86,5 +114,36 @@ class BuskingMapperTest extends IntegrationTest {
             0.5
         );
         assertThat(buskings.size()).isEqualTo(1);
+    }
+
+    @Test
+    void getBuskingProfile() {
+        final BuskingProfileResultVo vo1 = buskingMapper.profile(buskingId1).get();
+        assertThat(vo1.getUserId()).isEqualTo(saveUser.getId());
+        assertThat(vo1.getNickname()).isEqualTo(saveUser.getNickname());
+        assertThat(vo1.getProfileImagePath()).isNullOrEmpty();
+        assertThat(vo1.getLatitude()).isEqualTo(latitude1);
+        assertThat(vo1.getLongitude()).isEqualTo(longitude1);
+        assertThat(vo1.getTitle()).isEqualTo("Test");
+        assertThat(vo1.getDescription()).isEqualTo("Test");
+        assertThat(vo1.getManagedStartTime()).isEqualTo(managedStartTime1);
+        assertThat(vo1.getManagedEndTime()).isEqualTo(managedEndTime1);
+        assertThat(vo1.getEndTime()).isNull();
+        vo1.getKeywords().forEach(keyword -> assertThat(keyword).isIn(keyword1));
+        assertThat(vo1.getImagePaths()).isEqualTo(imagePaths1);
+
+        final BuskingProfileResultVo vo2 = buskingMapper.profile(buskingId2).get();
+        assertThat(vo2.getUserId()).isEqualTo(saveUser.getId());
+        assertThat(vo2.getNickname()).isEqualTo(saveUser.getNickname());
+        assertThat(vo2.getProfileImagePath()).isNullOrEmpty();
+        assertThat(vo2.getLatitude()).isEqualTo(latitude2);
+        assertThat(vo2.getLongitude()).isEqualTo(longitude2);
+        assertThat(vo2.getTitle()).isEqualTo("Test");
+        assertThat(vo2.getDescription()).isEqualTo("Test");
+        assertThat(vo2.getManagedStartTime()).isEqualTo(managedStartTime2);
+        assertThat(vo2.getManagedEndTime()).isEqualTo(managedEndTime2);
+        assertThat(vo2.getEndTime()).isNull();
+        vo2.getKeywords().forEach(keyword -> assertThat(keyword).isIn(keyword2));
+        assertThat(vo2.getImagePaths()).isEqualTo(imagePaths2);
     }
 }

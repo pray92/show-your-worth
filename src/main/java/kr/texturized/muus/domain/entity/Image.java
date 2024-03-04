@@ -1,10 +1,10 @@
 package kr.texturized.muus.domain.entity;
 
-import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import kr.texturized.muus.domain.entity.fk.ImageFk;
+import javax.validation.constraints.NotNull;
+
+import kr.texturized.muus.infrastructure.repository.converter.type.PostCategoryConverter;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,20 +18,35 @@ import lombok.NoArgsConstructor;
 @Getter
 public class Image {
 
-    @EmbeddedId
-    private ImageFk id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @NotNull
+    private Long postId;
+
+    @NotNull
+    @Convert(converter = PostCategoryConverter.class)
+    @Column(nullable = false, updatable = false)
+    private PostCategoryEnum postType;
+
+    @NotNull
+    private Integer uploadOrder;
 
     @NotBlank
     @Column(length = 250)
     private String path;       // Relative image path
 
-
     @Builder
     public Image(
-        final ImageFk id,
+        final Long postId,
+        final PostCategoryEnum postType,
+        final Integer uploadOrder,
         final String path
     ) {
-        this.id = id;
+        this.postId = postId;
+        this.postType = postType;
+        this.uploadOrder = uploadOrder;
         this.path = path;
     }
 }

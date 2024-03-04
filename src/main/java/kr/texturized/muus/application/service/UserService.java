@@ -4,9 +4,12 @@ import java.util.Optional;
 import kr.texturized.muus.application.service.exception.DuplicatedAccountIdException;
 import kr.texturized.muus.application.service.exception.DuplicatedNicknameException;
 import kr.texturized.muus.application.service.exception.InvalidAccountException;
+import kr.texturized.muus.common.storage.PostImageStorage;
 import kr.texturized.muus.common.util.PasswordEncryptor;
 import kr.texturized.muus.domain.entity.User;
 import kr.texturized.muus.domain.entity.UserTypeEnum;
+import kr.texturized.muus.domain.exception.UserNotFoundException;
+import kr.texturized.muus.domain.vo.UserProfileResultVo;
 import kr.texturized.muus.domain.vo.UserSignInResultVo;
 import kr.texturized.muus.domain.vo.UserSignInVo;
 import kr.texturized.muus.domain.vo.UserSignUpVo;
@@ -16,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Service for User Sign up.
@@ -27,6 +31,8 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+
+    private final PostImageStorage postImageStorage;
 
     /**
      * Sign up logic with total validation.
@@ -54,6 +60,16 @@ public class UserService {
             }).orElseThrow(InvalidAccountException::new);
 
         return signUpUser.getId();
+    }
+
+    /**
+     * 유저 프로필을 반환해요.
+     *
+     * @param userId 대상 유저 테이블 ID
+     * @return UI에서 유저 식별을 위한 기본적인 프로필 정보 Vo
+     */
+    public UserProfileResultVo profile(final Long userId) {
+        return userMapper.findProfile(userId).orElseThrow(() -> new UserNotFoundException(userId));
     }
 
     /**
@@ -120,6 +136,22 @@ public class UserService {
     }
 
     /**
+     * 대상 계정의 프로필 이미지를 변경해요.
+     *
+     * @param accountId 대상 계정 ID
+     * @param imageFile 프로필 이미지
+     * @return 변경된 유저 ID
+     */
+    @Transactional
+    public Long changeProfileImage(final String accountId, final MultipartFile imageFile) {
+        final User user = getUser(accountId).orElseThrow(InvalidAccountException::new);
+        final String uploadPath = postImageStorage.upload(user.getId(), imageFile);
+        user.update(user.getPassword(), user.getNickname(), uploadPath);
+
+        return userRepository.save(user).getId();
+    }
+
+    /**
      * Get User Entity from DB.
      *
      * @param accountId Account ID
@@ -134,7 +166,7 @@ public class UserService {
      *
      * @param accountId account to user
      */
-    public void checkDuplicatedAccountId(String accountId) {
+    public void checkDuplicatedAccountId(final String accountId) {
         if (userMapper.existsByAccountId(accountId)) {
             throw new DuplicatedAccountIdException();
         }
@@ -145,7 +177,7 @@ public class UserService {
      *
      * @param nickname nickname to use
      */
-    public void checkDuplicatedNickname(String nickname) {
+    public void checkDuplicatedNickname(final String nickname) {
         if (userMapper.existsByNickname(nickname)) {
             throw new DuplicatedNicknameException();
         }
@@ -157,7 +189,8 @@ public class UserService {
      * @param accountId Account ID to find user type
      * @return User Type
      */
-    public UserTypeEnum getAccountIdUserType(String accountId) {
+    public UserTypeEnum getAccountIdUserType(final String accountId) {
         return userMapper.findUserTypeByAccountId(accountId);
     }
+
 }
