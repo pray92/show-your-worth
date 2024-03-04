@@ -10,16 +10,18 @@
     </constructor>
   </resultMap>
   <select id="search" resultMap="BuskingSearchResultVo">
-    select id, latitude, longitude
-    from busking
-    where
-        (end_time is null or end_time > now())
+    SELECT
+      id, latitude, longitude
+    FROM
+      busking
+    WHERE
+        (end_time IS NULL OR end_time > NOW())
         <!--
           This query is for searching buskings in map based on offset coordinate.
           That's the reason why using the number 0.5
         -->
-        and latitude between #{latitude} - #{width} * 0.5 and #{latitude} + #{width} * 0.5
-        and longitude between #{longitude} - #{height} * 0.5 and #{longitude} + #{height} * 0.5
+        AND latitude BETWEEN #{latitude} - #{width} * 0.5 AND #{latitude} + #{width} * 0.5
+        AND longitude BETWEEN #{longitude} - #{height} * 0.5 AND #{longitude} + #{height} * 0.5
   </select>
 
   <resultMap id="BuskingProfileResultVo" type="kr.texturized.muus.domain.vo.BuskingProfileResultVo">
@@ -41,7 +43,7 @@
     </collection>
   </resultMap>
   <select id="profile" resultMap="BuskingProfileResultVo">
-    select
+    SELECT
       u.id,
       u.nickname,
       u.profile_image_path,
@@ -54,17 +56,17 @@
       b.end_time,
       k.keyword,
       i.path
-    from
+    FROM
       busking b
-      left join
-        users u on b.host_id = u.id
-      left join
-        keyword k on b.id = k.post_id and k.post_type = 1 <!-- 1: Busking, 2: Feed, 3: Notice -->
-      left join
-        image i on b.id = i.post_id and i.post_type = 1 <!-- 1: Busking, 2: Feed, 3: Notice -->
-    where
+      LEFT JOIN
+        users u ON b.host_id = u.id
+      LEFT JOIN
+        keyword k ON b.id = k.post_id AND k.post_type = 1 <!-- 1: Busking, 2: Feed, 3: Notice -->
+      LEFT JOIN
+        image i ON b.id = i.post_id AND i.post_type = 1 <!-- 1: Busking, 2: Feed, 3: Notice -->
+    WHERE
       b.id = #{buskingId}
-    order by
-      i.upload_order asc
+    ORDER BY
+      i.upload_order ASC
   </select>
 </mapper>
