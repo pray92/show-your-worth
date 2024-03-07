@@ -28,7 +28,7 @@ public class Image {
     @NotNull
     @Convert(converter = PostCategoryConverter.class)
     @Column(nullable = false, updatable = false)
-    private PostCategoryEnum postType;
+    private PostTypeEnum postType;
 
     @NotNull
     private Integer uploadOrder;
@@ -40,7 +40,7 @@ public class Image {
     @Builder
     public Image(
         final Long postId,
-        final PostCategoryEnum postType,
+        final PostTypeEnum postType,
         final Integer uploadOrder,
         final String path
     ) {

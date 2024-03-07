@@ -3,7 +3,7 @@ package kr.texturized.muus.dao;
 import kr.texturized.muus.domain.entity.Busking;
 import kr.texturized.muus.domain.entity.Image;
 import kr.texturized.muus.domain.entity.Keyword;
-import kr.texturized.muus.domain.entity.PostCategoryEnum;
+import kr.texturized.muus.domain.entity.PostTypeEnum;
 import kr.texturized.muus.domain.vo.BuskingCreateModelVo;
 import kr.texturized.muus.infrastructure.repository.BuskingRepository;
 import kr.texturized.muus.infrastructure.repository.ImageRepository;
@@ -35,8 +35,8 @@ public class BuskingDao {
     public Long create(final BuskingCreateModelVo vo) {
 
         saveBusking(vo.busking());
-        saveKeywords(vo.keywords(), vo.busking().getId(), PostCategoryEnum.BUSKING, vo.busking().getTitle());
-        saveImages(vo.imagePaths(), vo.busking().getId(), PostCategoryEnum.BUSKING, vo.busking().getTitle());
+        saveKeywords(vo.keywords(), vo.busking().getId(), PostTypeEnum.BUSKING, vo.busking().getTitle());
+        saveImages(vo.imagePaths(), vo.busking().getId(), PostTypeEnum.BUSKING, vo.busking().getTitle());
 
         return vo.busking().getId();
     }
@@ -59,22 +59,22 @@ public class BuskingDao {
      *
      * @param keywords 키워드 엔티티 목록
      * @param postId 키워드가 속한 게시물 ID
-     * @param category 키워드가 속한 게시물 타입
+     * @param postType 키워드가 속한 게시물 타입
      * @param title 게시물 제목
      */
     private void saveKeywords(
         final List<String> keywords,
         final Long postId,
-        final PostCategoryEnum category,
+        final PostTypeEnum postType,
         final String title
     ) {
         keywords.forEach(keyword -> {
             keywordRepository.save(Keyword.builder()
                     .postId(postId)
-                    .postType(category)
+                    .postType(postType)
                     .keyword(keyword)
                 .build());
-            log.info("Keyword: {} for {} {} is added", keyword, category, title);
+            log.info("Keyword: {} for {} {} is added", keyword, postType, title);
         });
     }
 
@@ -84,25 +84,25 @@ public class BuskingDao {
      *
      * @param imagePaths 이미지 엔티티 목록
      * @param postId 이미지가 속한 게시물 ID
-     * @param category 이미지가 속한 게시물 타입
+     * @param postType 이미지가 속한 게시물 타입
      * @param title 게시물 제목
      */
     private void saveImages(
             final List<String> imagePaths,
             final Long postId,
-            final PostCategoryEnum category,
+            final PostTypeEnum postType,
             final String title
     ) {
         for (int order = 0; order < imagePaths.size(); ++order) {
             final String imagePath = imagePaths.get(order);
             imageRepository.save(Image.builder()
                     .postId(postId)
-                    .postType(category)
+                    .postType(postType)
                     .uploadOrder(order)
                     .path(imagePath)
                 .build());
 
-            log.info("Image No. {} for {} {} is added named by [{}]", order, category, title, imagePath);
+            log.info("Image No. {} for {} {} is added named by [{}]", order, postType, title, imagePath);
         }
     }
 }
