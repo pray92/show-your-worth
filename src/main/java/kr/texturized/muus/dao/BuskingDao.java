@@ -5,6 +5,7 @@ import kr.texturized.muus.domain.entity.Image;
 import kr.texturized.muus.domain.entity.Keyword;
 import kr.texturized.muus.domain.entity.PostTypeEnum;
 import kr.texturized.muus.domain.vo.BuskingCreateModelVo;
+import kr.texturized.muus.domain.vo.BuskingUpdateModelVo;
 import kr.texturized.muus.infrastructure.repository.BuskingRepository;
 import kr.texturized.muus.infrastructure.repository.ImageRepository;
 import kr.texturized.muus.infrastructure.repository.KeywordRepository;
@@ -13,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * DAO for Busking CUD.
@@ -35,8 +37,8 @@ public class BuskingDao {
     public Long create(final BuskingCreateModelVo vo) {
 
         saveBusking(vo.busking());
-        saveKeywords(vo.keywords(), vo.busking().getId(), PostTypeEnum.BUSKING, vo.busking().getTitle());
-        saveImages(vo.imagePaths(), vo.busking().getId(), PostTypeEnum.BUSKING, vo.busking().getTitle());
+        saveKeywords(vo.keywords(), vo.busking().getId(), vo.busking().getTitle());
+        saveImages(vo.imagePaths(), vo.busking().getId(), vo.busking().getTitle());
 
         return vo.busking().getId();
     }
@@ -50,7 +52,11 @@ public class BuskingDao {
     private void saveBusking(final Busking busking) {
         buskingRepository.save(busking);
 
-        log.info("Busking is created({}): {}", busking.getId(), busking.getTitle());
+        if (0 >= busking.getId()) {
+            log.info("Busking is created({}): {}", busking.getId(), busking);
+        } else {
+            log.info("Busking is updated({}): {}", busking.getId(), busking);
+        }
     }
 
     /**
@@ -59,22 +65,20 @@ public class BuskingDao {
      *
      * @param keywords 키워드 엔티티 목록
      * @param postId 키워드가 속한 게시물 ID
-     * @param postType 키워드가 속한 게시물 타입
      * @param title 게시물 제목
      */
     private void saveKeywords(
         final List<String> keywords,
         final Long postId,
-        final PostTypeEnum postType,
         final String title
     ) {
         keywords.forEach(keyword -> {
             keywordRepository.save(Keyword.builder()
                     .postId(postId)
-                    .postType(postType)
+                    .postType(PostTypeEnum.BUSKING)
                     .keyword(keyword)
                 .build());
-            log.info("Keyword: {} for {} {} is added", keyword, postType, title);
+            log.info("Keyword: {} for {} {} is added", keyword,  PostTypeEnum.BUSKING, title);
         });
     }
 
@@ -84,26 +88,50 @@ public class BuskingDao {
      *
      * @param imagePaths 이미지 엔티티 목록
      * @param postId 이미지가 속한 게시물 ID
-     * @param postType 이미지가 속한 게시물 타입
      * @param title 게시물 제목
      */
     private void saveImages(
             final List<String> imagePaths,
             final Long postId,
-            final PostTypeEnum postType,
             final String title
     ) {
         for (int order = 0; order < imagePaths.size(); ++order) {
             final String imagePath = imagePaths.get(order);
             imageRepository.save(Image.builder()
                     .postId(postId)
-                    .postType(postType)
+                    .postType(PostTypeEnum.BUSKING)
                     .uploadOrder(order)
                     .path(imagePath)
                 .build());
 
-            log.info("Image No. {} for {} {} is added named by [{}]", order, postType, title, imagePath);
+            log.info("Image No. {} for {} {} is added named by [{}]", order, PostTypeEnum.BUSKING, title, imagePath);
         }
+    }
+
+    /**
+     * 버스킹 정보를 업데이트해요.
+     *
+     * @param vo 버스킹+변경할 버스킹 정보를 담은 Vo
+     * @return 변경된 버스킹 ID
+     */
+    public Long updateBusking(final BuskingUpdateModelVo vo) {
+        Busking busking = vo.busking();
+        busking.update(vo.latitude(), vo.longitude(), vo.title(), vo.description(), vo.managedStartTime(), vo.managedEndTime());
+
+        saveBusking(busking);
+        deleteAllBuskingKeywords(busking.getId());
+        saveKeywords(vo.keywords(), busking.getId(), vo.title());
+
+        return busking.getId();
+    }
+
+    /**
+     * 해당 버스킹의 키워드를 모두 삭제해요.
+     *
+     * @param buskingId 키워드를 삭제하려는 버스킹 ID
+     */
+    private void deleteAllBuskingKeywords(final Long buskingId) {
+        keywordRepository.deleteAllInBatchByPostIdAndPostType(buskingId, PostTypeEnum.BUSKING);
     }
 }
 

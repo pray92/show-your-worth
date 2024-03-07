@@ -84,6 +84,26 @@ public class Busking {
         this.endTime = endTime;
     }
 
+    public void update(
+        final Double latitude,
+        final Double longitude,
+        final String title,
+        final String description,
+        final LocalDateTime managedStartTime,
+        final LocalDateTime managedEndTime
+    ) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.title = title;
+        this.description = description;
+        this.managedStartTime = managedStartTime;
+        this.managedEndTime = managedEndTime;
+    }
+
+    public void end() {
+        this.endTime = LocalDateTime.now();
+    }
+
     @Override
     public String toString() {
         return String.format("Busking(host=%s, title=%s, createTime=%s",
