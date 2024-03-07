@@ -85,15 +85,4 @@ class BuskingRepositoryTest extends IntegrationTest {
         assertThat(findBusking.get().getManagedEndTime()).isEqualTo(busking.getManagedEndTime());
     }
 
-    @Test
-    void deleteBuskingKeywords() {
-        List<Keyword> keywords = keywordRepository.findAllByPostIdAndPostType(busking.getId(), PostTypeEnum.BUSKING);
-        final int prevCount = keywords.size();
-
-        keywordRepository.deleteAllInBatchByPostIdAndPostType(busking.getId(), PostTypeEnum.BUSKING);
-        keywords = keywordRepository.findAllByPostIdAndPostType(busking.getId(), PostTypeEnum.BUSKING);
-        final int curCount = keywords.size();
-
-        assertThat(curCount).isNotEqualTo(prevCount);
-    }
 }

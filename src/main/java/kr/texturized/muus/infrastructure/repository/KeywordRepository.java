@@ -12,5 +12,4 @@ import java.util.List;
 public interface KeywordRepository extends JpaRepository<Keyword, Long> {
 
     void deleteAllInBatchByPostIdAndPostType(Long postId, PostTypeEnum postType);
-    List<Keyword> findAllByPostIdAndPostType(Long postId, PostTypeEnum postType);
 }
