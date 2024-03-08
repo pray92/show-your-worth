@@ -37,7 +37,7 @@ public class BuskingServiceTest extends IntegrationTest {
                     .userType(UserTypeEnum.USER)
                 .build());
         buskingId = buskingService.create(new BuskingCreateVo(
-                user.getId(),
+                user.getAccountId(),
                 "Test",
                 new ArrayList<>(),
                 27.51234,

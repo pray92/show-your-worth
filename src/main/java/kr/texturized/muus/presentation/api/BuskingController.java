@@ -43,20 +43,21 @@ public class BuskingController {
      * <br>
      * Reference: <a href="https://www.inflearn.com/questions/307133/image-%EC%A0%84%EC%86%A1%EA%B3%BC-%ED%95%A8%EA%BB%98-%EB%8D%B0%EC%9D%B4%ED%84%B0%EB%8A%94-json%EC%9C%BC%EB%A1%9C-%EB%B3%B4%EB%82%B4%EA%B3%A0-%EC%8B%B6%EC%9D%80-%EA%B2%BD%EC%9A%B0">image 전송과 함께 데이터는 json으로 보내고 싶은 경우</a>
      *
-     * @param userId User's ID in DB
      * @param request DTO for busking post information
      * @param imageFiles images for post
      * @return Created busking ID in DB
      */
-    @PostMapping("/{userId}")
+    @PostMapping()
+    @SignInCheck(userType = {UserTypeEnum.USER, UserTypeEnum.ADMIN})
     public ResponseEntity<Long> create(
-        @PathVariable final Long userId,
         @Valid @RequestPart final BuskingCreateRequest request,
         @RequestPart("images") final MultipartFile[] imageFiles
     ) {
+        final String accountId = userSignFacade.getCurrentAccountId();
+
         rangeChecker.validateRange(request.latitude(), request.longitude(), 0.0, 0.0);
 
-        final BuskingCreateVo vo = BuskingCreateVo.of(userId, request, imageFiles);
+        final BuskingCreateVo vo = BuskingCreateVo.of(accountId, request, imageFiles);
         final Long buskingId = buskingService.create(vo);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(buskingId);

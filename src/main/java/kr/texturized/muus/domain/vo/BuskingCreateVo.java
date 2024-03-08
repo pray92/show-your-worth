@@ -19,7 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
  * @param managedEndTime managedEndTime
  */
 public record BuskingCreateVo(
-    Long userId,
+    String accountId,
     String title,
     List<MultipartFile> imageFiles,
     Double latitude,
@@ -31,12 +31,12 @@ public record BuskingCreateVo(
 ) {
 
     public static BuskingCreateVo of(
-        final Long userId,
+        final String accountId,
         final BuskingCreateRequest request,
         final MultipartFile[] imageFiles
     ) {
         return new BuskingCreateVo(
-                userId,
+                accountId,
                 request.title(),
                 List.of(imageFiles),
                 request.latitude(),

@@ -2,6 +2,7 @@ package kr.texturized.muus.application.service;
 
 import java.util.List;
 
+import kr.texturized.muus.application.service.exception.InvalidAccountException;
 import kr.texturized.muus.application.service.exception.MismatchedPostAndUserException;
 import kr.texturized.muus.common.coordinate.CoordinateCalculator;
 import kr.texturized.muus.common.storage.PostImageStorage;
@@ -49,7 +50,7 @@ public class BuskingService {
      */
     @Transactional
     public Long create(final BuskingCreateVo vo) {
-        final User user = userMapper.findById(vo.userId()).orElseThrow(() -> new UserNotFoundException(vo.userId()));
+        final User user = userMapper.findByAccountId(vo.accountId()).orElseThrow(InvalidAccountException::new);
 
         final Busking busking = Busking.builder()
                     .host(user)
@@ -60,7 +61,7 @@ public class BuskingService {
                     .managedStartTime(vo.managedStartTime())
                     .managedEndTime(vo.managedEndTime())
                 .build();
-        final List<String> uploadedPaths = uploadImagesThenGetUploadedPaths(vo.userId(), vo.imageFiles());
+        final List<String> uploadedPaths = uploadImagesThenGetUploadedPaths(user.getId(), vo.imageFiles());
 
         final BuskingCreateModelVo modelVo = BuskingCreateModelVo.of(busking, vo.keywords(), uploadedPaths);
 
