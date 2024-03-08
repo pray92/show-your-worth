@@ -45,15 +45,15 @@ public class Busking {
     private String description;
 
     @FutureOrPresent
-    @Column(name = "managed_start_time", nullable = false)
+    @Column(nullable = false)
     private LocalDateTime managedStartTime;
 
     @Future
-    @Column(name = "managed_end_time", nullable = false)
+    @Column(nullable = false)
     private LocalDateTime managedEndTime;
 
     @CreationTimestamp
-    @Column(name = "create_time", nullable = false)
+    @Column(nullable = false)
     private LocalDateTime createTime;
 
     @Future
