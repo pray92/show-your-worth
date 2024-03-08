@@ -133,6 +133,11 @@ public class BuskingService {
         return buskingDao.update(modelVo);
     }
 
+    @Transactional
+    public void delete(final Long buskingId) {
+        buskingDao.delete(buskingId);
+    }
+
     /**
      * 해당 유저가 버스킹을 만들었는지 확인해요.
      *

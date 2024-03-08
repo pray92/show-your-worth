@@ -1,6 +1,7 @@
 package kr.texturized.muus.infrastructure.repository;
 
 import kr.texturized.muus.domain.entity.Image;
+import kr.texturized.muus.domain.entity.PostTypeEnum;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -8,4 +9,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  */
 public interface ImageRepository extends JpaRepository<Image, Long> {
 
+    void deleteAllInBatchByPostIdAndPostType(Long postId, PostTypeEnum postType);
 }
