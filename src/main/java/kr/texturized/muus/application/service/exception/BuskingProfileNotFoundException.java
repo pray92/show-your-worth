@@ -1,4 +1,4 @@
-package kr.texturized.muus.domain.exception;
+package kr.texturized.muus.application.service.exception;
 
 import javax.persistence.EntityNotFoundException;
 
