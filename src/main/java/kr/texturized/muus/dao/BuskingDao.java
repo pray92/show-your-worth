@@ -113,7 +113,7 @@ public class BuskingDao {
      * @param vo 버스킹+변경할 버스킹 정보를 담은 Vo
      * @return 변경된 버스킹 ID
      */
-    public Long updateBusking(final BuskingUpdateModelVo vo) {
+    public Long update(final BuskingUpdateModelVo vo) {
         final Busking busking = buskingRepository.getById(vo.buskingId());
         busking.update(vo.latitude(), vo.longitude(), vo.title(), vo.description(), vo.managedStartTime(), vo.managedEndTime());
 
@@ -125,12 +125,38 @@ public class BuskingDao {
     }
 
     /**
+     * 해당 버스킹에 대한 정보를 모두 삭제해요.
+     *
+     * @param buskingId 삭제하려는 버스킹 ID
+     */
+    public void delete(final Long buskingId) {
+        buskingRepository.deleteById(buskingId);
+        deleteAllBuskingKeywords(buskingId);
+        deleteAllBuskingImages(buskingId);
+    }
+
+    /**
      * 해당 버스킹의 키워드를 모두 삭제해요.
      *
      * @param buskingId 키워드를 삭제하려는 버스킹 ID
      */
     private void deleteAllBuskingKeywords(final Long buskingId) {
         keywordRepository.deleteAllInBatchByPostIdAndPostType(buskingId, PostTypeEnum.BUSKING);
+    }
+
+    /**
+     * DB에 있는 해당 버스킹의 이미지 '정보'를 모두 삭제해요.<br>
+     * <br>
+     * 이미지의 경우 테이블에 존재하는 이미지에 대한 정보만 존재해요.
+     * 실제 이미지를 없애려면 따로 처리가 필요해요.
+     *
+     * '24.03.08 기준으로 이에 대한 로직은 준비되어 있지 않아요.
+     * 실제 이미지 삭제는 서버에서 처리하지 않고 이후 스케듈러를 통해 일정 주기로 DB에 등록되지 않은 이미지는 스토리지에 삭제하도록 구현할 예정이에요.
+     *
+     * @param buskingId 이미지를 삭제하려는 버스킹 ID
+     */
+    private void deleteAllBuskingImages(final Long buskingId) {
+        imageRepository.deleteAllInBatchByPostIdAndPostType(buskingId, PostTypeEnum.BUSKING);
     }
 }
 

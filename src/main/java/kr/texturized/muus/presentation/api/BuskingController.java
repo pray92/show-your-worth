@@ -114,4 +114,16 @@ public class BuskingController {
 
         return ResponseEntity.status(HttpStatus.OK).body(updatedBuskingId);
     }
+
+    @DeleteMapping("/{buskingId}")
+    @SignInCheck(userType = {UserTypeEnum.USER, UserTypeEnum.ADMIN})
+    public ResponseEntity<String> delete(@PathVariable final Long buskingId) {
+        final String accountId = userSignFacade.getCurrentAccountId();
+
+        buskingService.validateBuskingMadeByUser(buskingId, accountId);
+
+        buskingService.delete(buskingId);
+
+        return ResponseEntity.status(HttpStatus.OK).body("삭제되었어요.");
+    }
 }

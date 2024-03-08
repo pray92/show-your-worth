@@ -130,7 +130,12 @@ public class BuskingService {
                 vo.managedEndTime(),
                 vo.keywords());
 
-        return buskingDao.updateBusking(modelVo);
+        return buskingDao.update(modelVo);
+    }
+
+    @Transactional
+    public void delete(final Long buskingId) {
+        buskingDao.delete(buskingId);
     }
 
     /**
