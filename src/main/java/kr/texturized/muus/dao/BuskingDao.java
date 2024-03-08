@@ -113,7 +113,7 @@ public class BuskingDao {
      * @param vo 버스킹+변경할 버스킹 정보를 담은 Vo
      * @return 변경된 버스킹 ID
      */
-    public Long updateBusking(final BuskingUpdateModelVo vo) {
+    public Long update(final BuskingUpdateModelVo vo) {
         final Busking busking = buskingRepository.getById(vo.buskingId());
         busking.update(vo.latitude(), vo.longitude(), vo.title(), vo.description(), vo.managedStartTime(), vo.managedEndTime());
 

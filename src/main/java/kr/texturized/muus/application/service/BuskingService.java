@@ -130,7 +130,7 @@ public class BuskingService {
                 vo.managedEndTime(),
                 vo.keywords());
 
-        return buskingDao.updateBusking(modelVo);
+        return buskingDao.update(modelVo);
     }
 
     /**

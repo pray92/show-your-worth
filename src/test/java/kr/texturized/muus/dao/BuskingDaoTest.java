@@ -74,7 +74,7 @@ class BuskingDaoTest extends IntegrationTest {
         final LocalDateTime changedEndTime = LocalDateTime.now().plusHours(1L);
         final List<String> changedKeywords = Arrays.asList("b1", "b2");
 
-        buskingDao.updateBusking(BuskingUpdateModelVo.of(
+        buskingDao.update(BuskingUpdateModelVo.of(
                 busking.getId(),
                 changedLatitude,
                 changedLongitude,
