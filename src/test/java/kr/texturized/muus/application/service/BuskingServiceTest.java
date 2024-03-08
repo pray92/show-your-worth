@@ -2,7 +2,7 @@ package kr.texturized.muus.application.service;
 
 import kr.texturized.muus.domain.entity.User;
 import kr.texturized.muus.domain.entity.UserTypeEnum;
-import kr.texturized.muus.domain.exception.BuskingProfileNotFoundException;
+import kr.texturized.muus.application.service.exception.BuskingProfileNotFoundException;
 import kr.texturized.muus.domain.vo.BuskingCreateVo;
 import kr.texturized.muus.domain.vo.BuskingProfileResultVo;
 import kr.texturized.muus.infrastructure.repository.UserRepository;
@@ -37,7 +37,7 @@ public class BuskingServiceTest extends IntegrationTest {
                     .userType(UserTypeEnum.USER)
                 .build());
         buskingId = buskingService.create(new BuskingCreateVo(
-                user.getId(),
+                user.getAccountId(),
                 "Test",
                 new ArrayList<>(),
                 27.51234,

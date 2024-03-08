@@ -29,7 +29,7 @@ public class Keyword {
     @NotNull
     @Convert(converter = PostCategoryConverter.class)
     @Column(nullable = false, updatable = false)
-    private PostCategoryEnum postType;
+    private PostTypeEnum postType;
 
     @NotBlank
     @Column(name = "keyword", length = 15)
@@ -38,7 +38,7 @@ public class Keyword {
     @Builder
     public Keyword(
         final Long postId,
-        final PostCategoryEnum postType,
+        final PostTypeEnum postType,
         final String keyword) {
         this.postId = postId;
         this.postType = postType;

@@ -45,15 +45,15 @@ public class Busking {
     private String description;
 
     @FutureOrPresent
-    @Column(name = "managed_start_time", nullable = false)
+    @Column(nullable = false)
     private LocalDateTime managedStartTime;
 
     @Future
-    @Column(name = "managed_end_time", nullable = false)
+    @Column(nullable = false)
     private LocalDateTime managedEndTime;
 
     @CreationTimestamp
-    @Column(name = "create_time", nullable = false)
+    @Column(nullable = false)
     private LocalDateTime createTime;
 
     @Future
@@ -82,6 +82,26 @@ public class Busking {
         this.managedStartTime = managedStartTime;
         this.managedEndTime = managedEndTime;
         this.endTime = endTime;
+    }
+
+    public void update(
+        final Double latitude,
+        final Double longitude,
+        final String title,
+        final String description,
+        final LocalDateTime managedStartTime,
+        final LocalDateTime managedEndTime
+    ) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.title = title;
+        this.description = description;
+        this.managedStartTime = managedStartTime;
+        this.managedEndTime = managedEndTime;
+    }
+
+    public void end() {
+        this.endTime = LocalDateTime.now();
     }
 
     @Override

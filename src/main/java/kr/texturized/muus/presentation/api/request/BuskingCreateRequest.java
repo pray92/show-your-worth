@@ -7,15 +7,15 @@ import kr.texturized.muus.domain.vo.BuskingCreateVo;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
- * Request for busking create, update.
+ * Request for busking create
  */
 public record BuskingCreateRequest(
-    String title,
     Double latitude,
     Double longitude,
-    List<String> keywords,
+    String title,
     String description,
     LocalDateTime managedStartTime,
-    LocalDateTime managedEndTime
+    LocalDateTime managedEndTime,
+    List<String> keywords
 ){
 }

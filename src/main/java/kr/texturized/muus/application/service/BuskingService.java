@@ -2,12 +2,13 @@ package kr.texturized.muus.application.service;
 
 import java.util.List;
 
+import kr.texturized.muus.application.service.exception.InvalidAccountException;
+import kr.texturized.muus.application.service.exception.MismatchedPostAndUserException;
 import kr.texturized.muus.common.coordinate.CoordinateCalculator;
 import kr.texturized.muus.common.storage.PostImageStorage;
 import kr.texturized.muus.dao.BuskingDao;
 import kr.texturized.muus.domain.entity.*;
-import kr.texturized.muus.domain.exception.BuskingProfileNotFoundException;
-import kr.texturized.muus.domain.exception.UserNotFoundException;
+import kr.texturized.muus.application.service.exception.BuskingProfileNotFoundException;
 import kr.texturized.muus.domain.vo.*;
 import kr.texturized.muus.infrastructure.mapper.BuskingMapper;
 import kr.texturized.muus.infrastructure.mapper.UserMapper;
@@ -28,9 +29,10 @@ import static java.util.stream.Collectors.*;
 public class BuskingService {
 
     private final UserMapper userMapper;
-    private final BuskingDao buskingDao;
 
+    private final BuskingDao buskingDao;
     private final BuskingMapper buskingMapper;
+
     private final CoordinateCalculator coordinateCalculator;
 
     private final PostImageStorage postImageStorage;
@@ -47,7 +49,7 @@ public class BuskingService {
      */
     @Transactional
     public Long create(final BuskingCreateVo vo) {
-        final User user = userMapper.findById(vo.userId()).orElseThrow(() -> new UserNotFoundException(vo.userId()));
+        final User user = userMapper.findByAccountId(vo.accountId()).orElseThrow(InvalidAccountException::new);
 
         final Busking busking = Busking.builder()
                     .host(user)
@@ -58,7 +60,7 @@ public class BuskingService {
                     .managedStartTime(vo.managedStartTime())
                     .managedEndTime(vo.managedEndTime())
                 .build();
-        final List<String> uploadedPaths = uploadImagesThenGetUploadedPaths(vo.userId(), vo.imageFiles());
+        final List<String> uploadedPaths = uploadImagesThenGetUploadedPaths(user.getId(), vo.imageFiles());
 
         final BuskingCreateModelVo modelVo = BuskingCreateModelVo.of(busking, vo.keywords(), uploadedPaths);
 
@@ -75,6 +77,7 @@ public class BuskingService {
      */
     private List<String> uploadImagesThenGetUploadedPaths(final Long userId, final List<MultipartFile> multipartFiles) {
         return multipartFiles.stream()
+                .filter(partFile -> null != partFile.getContentType() && partFile.getContentType().startsWith("image/"))
                 .map(partFile -> {
                     final String uploadedPath = postImageStorage.upload(userId, partFile);
                     log.info("Image is uploaded on: {}", uploadedPath);
@@ -106,6 +109,39 @@ public class BuskingService {
      * @return 버스킹 프로필 조회 결과 VO
      */
     public BuskingProfileResultVo profile(final Long buskingId) {
-        return buskingMapper.profile(buskingId).orElseThrow(() -> new BuskingProfileNotFoundException(buskingId));
+        return buskingMapper.profile(buskingId).orElseThrow(BuskingProfileNotFoundException::new);
+    }
+
+    /**
+     * 버스킹 정보 업데이트
+     *
+     * @param vo 버스킹 업데이트에 필요한 정보 Vo
+     * @return 변경된 버스킹 ID
+     */
+    @Transactional
+    public Long update(final BuskingUpdateVo vo) {
+        final BuskingUpdateModelVo modelVo = BuskingUpdateModelVo.of(
+                vo.buskingId(),
+                vo.latitude(),
+                vo.longitude(),
+                vo.title(),
+                vo.description(),
+                vo.managedStartTime(),
+                vo.managedEndTime(),
+                vo.keywords());
+
+        return buskingDao.updateBusking(modelVo);
+    }
+
+    /**
+     * 해당 유저가 버스킹을 만들었는지 확인해요.
+     *
+     * @param buskingId 버스킹 ID
+     * @param accountId 유저 계정
+     */
+    public void validateBuskingMadeByUser(final Long buskingId, final String accountId) {
+        if (!buskingMapper.isBuskingMadeByUser(buskingId, accountId)) {
+           throw new MismatchedPostAndUserException();
+        }
     }
 }

@@ -8,7 +8,7 @@ import lombok.Getter;
  * PostCategory.
  */
 @Getter
-public enum PostCategoryEnum {
+public enum PostTypeEnum {
 
     BUSKING(1),
     FEED(2),
@@ -18,11 +18,11 @@ public enum PostCategoryEnum {
 
     private final int value;
 
-    PostCategoryEnum(final int value) {
+    PostTypeEnum(final int value) {
         this.value = value;
     }
 
-    public static PostCategoryEnum fromKey(String key) {
+    public static PostTypeEnum fromKey(String key) {
         int keyValue = Integer.parseInt(key);
         return fromKey(keyValue);
     }
@@ -33,7 +33,7 @@ public enum PostCategoryEnum {
      * @param key index in database
      * @return enum class mapping with key
      */
-    public static PostCategoryEnum fromKey(int key) {
+    public static PostTypeEnum fromKey(int key) {
         return Arrays.stream(values())
             .filter(type -> type.value == key)
             .findAny()

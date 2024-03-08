@@ -2,14 +2,16 @@ package kr.texturized.muus.presentation.api;
 
 import java.util.List;
 import javax.validation.Valid;
+
+import kr.texturized.muus.application.UserSignFacade;
 import kr.texturized.muus.application.service.BuskingService;
 import kr.texturized.muus.common.coordinate.RangeChecker;
-import kr.texturized.muus.domain.vo.BuskingProfileResultVo;
-import kr.texturized.muus.domain.vo.BuskingSearchResultVo;
-import kr.texturized.muus.domain.vo.BuskingSearchVo;
-import kr.texturized.muus.domain.vo.BuskingCreateVo;
+import kr.texturized.muus.common.util.SignInCheck;
+import kr.texturized.muus.domain.entity.UserTypeEnum;
+import kr.texturized.muus.domain.vo.*;
 import kr.texturized.muus.presentation.api.request.BuskingCreateRequest;
 import kr.texturized.muus.presentation.api.request.BuskingSearchRequest;
+import kr.texturized.muus.presentation.api.request.BuskingUpdateRequest;
 import kr.texturized.muus.presentation.api.response.BuskingProfileResponse;
 import kr.texturized.muus.presentation.api.response.BuskingSearchResponse;
 import lombok.RequiredArgsConstructor;
@@ -19,12 +21,14 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/buskings")
+@RequestMapping("/api/buskings")
 @RequiredArgsConstructor
 public class BuskingController {
 
     private final RangeChecker rangeChecker;
     private final BuskingService buskingService;
+
+    private final UserSignFacade userSignFacade;
 
     /**
      * Create Busking Post.<br>
@@ -39,20 +43,21 @@ public class BuskingController {
      * <br>
      * Reference: <a href="https://www.inflearn.com/questions/307133/image-%EC%A0%84%EC%86%A1%EA%B3%BC-%ED%95%A8%EA%BB%98-%EB%8D%B0%EC%9D%B4%ED%84%B0%EB%8A%94-json%EC%9C%BC%EB%A1%9C-%EB%B3%B4%EB%82%B4%EA%B3%A0-%EC%8B%B6%EC%9D%80-%EA%B2%BD%EC%9A%B0">image 전송과 함께 데이터는 json으로 보내고 싶은 경우</a>
      *
-     * @param userId User's ID in DB
      * @param request DTO for busking post information
      * @param imageFiles images for post
      * @return Created busking ID in DB
      */
-    @PostMapping("/{userId}")
+    @PostMapping()
+    @SignInCheck(userType = {UserTypeEnum.USER, UserTypeEnum.ADMIN})
     public ResponseEntity<Long> create(
-        @PathVariable final Long userId,
         @Valid @RequestPart final BuskingCreateRequest request,
         @RequestPart("images") final MultipartFile[] imageFiles
     ) {
+        final String accountId = userSignFacade.getCurrentAccountId();
+
         rangeChecker.validateRange(request.latitude(), request.longitude(), 0.0, 0.0);
 
-        final BuskingCreateVo vo = BuskingCreateVo.of(userId, request, imageFiles);
+        final BuskingCreateVo vo = BuskingCreateVo.of(accountId, request, imageFiles);
         final Long buskingId = buskingService.create(vo);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(buskingId);
@@ -85,5 +90,28 @@ public class BuskingController {
         final BuskingProfileResultVo resultVo = buskingService.profile(buskingId);
 
         return ResponseEntity.status(HttpStatus.OK).body(BuskingProfileResponse.of(resultVo));
+    }
+
+    /**
+     * 버스킹 업데이트
+     *
+     * @param buskingId 업데이트할 버스킹 ID
+     * @param request 버스킹 업데이트 요청 파라미터
+     * @return 업데이트된 버스킹 ID
+     */
+    @PutMapping("/{buskingId}")
+    @SignInCheck(userType = {UserTypeEnum.USER, UserTypeEnum.ADMIN})
+    public ResponseEntity<Long> update(
+            @PathVariable final Long buskingId,
+            @RequestBody final BuskingUpdateRequest request
+    ) {
+        final String accountId = userSignFacade.getCurrentAccountId();
+
+        rangeChecker.validateRange(request.latitude(), request.longitude(), 0.0, 0.0);
+        buskingService.validateBuskingMadeByUser(buskingId, accountId);
+
+        final Long updatedBuskingId = buskingService.update(BuskingUpdateVo.of(buskingId, request));
+
+        return ResponseEntity.status(HttpStatus.OK).body(updatedBuskingId);
     }
 }
