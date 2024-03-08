@@ -3,7 +3,7 @@ package kr.texturized.muus.dao;
 import kr.texturized.muus.domain.entity.Busking;
 import kr.texturized.muus.domain.entity.User;
 import kr.texturized.muus.domain.entity.UserTypeEnum;
-import kr.texturized.muus.domain.exception.BuskingProfileNotFoundException;
+import kr.texturized.muus.application.service.exception.BuskingProfileNotFoundException;
 import kr.texturized.muus.domain.vo.BuskingCreateModelVo;
 import kr.texturized.muus.domain.vo.BuskingProfileResultVo;
 import kr.texturized.muus.domain.vo.BuskingUpdateModelVo;
@@ -75,7 +75,7 @@ class BuskingDaoTest extends IntegrationTest {
         final List<String> changedKeywords = Arrays.asList("b1", "b2");
 
         buskingDao.updateBusking(BuskingUpdateModelVo.of(
-                busking,
+                busking.getId(),
                 changedLatitude,
                 changedLongitude,
                 changedTitle,
@@ -90,7 +90,7 @@ class BuskingDaoTest extends IntegrationTest {
         em.flush();
 
         final BuskingProfileResultVo vo = buskingMapper.profile(
-                busking.getId()).orElseThrow(() -> new BuskingProfileNotFoundException(busking.getId()));
+                busking.getId()).orElseThrow(BuskingProfileNotFoundException::new);
 
         assertThat(vo.getTitle()).isEqualTo(changedTitle);
         assertThat(vo.getDescription()).isEqualTo(changedDescription);

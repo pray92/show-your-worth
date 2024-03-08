@@ -2,11 +2,12 @@ package kr.texturized.muus.application.service;
 
 import java.util.List;
 
+import kr.texturized.muus.application.service.exception.MismatchedPostAndUserException;
 import kr.texturized.muus.common.coordinate.CoordinateCalculator;
 import kr.texturized.muus.common.storage.PostImageStorage;
 import kr.texturized.muus.dao.BuskingDao;
 import kr.texturized.muus.domain.entity.*;
-import kr.texturized.muus.domain.exception.BuskingProfileNotFoundException;
+import kr.texturized.muus.application.service.exception.BuskingProfileNotFoundException;
 import kr.texturized.muus.domain.exception.UserNotFoundException;
 import kr.texturized.muus.domain.vo.*;
 import kr.texturized.muus.infrastructure.mapper.BuskingMapper;
@@ -28,9 +29,10 @@ import static java.util.stream.Collectors.*;
 public class BuskingService {
 
     private final UserMapper userMapper;
-    private final BuskingDao buskingDao;
 
+    private final BuskingDao buskingDao;
     private final BuskingMapper buskingMapper;
+
     private final CoordinateCalculator coordinateCalculator;
 
     private final PostImageStorage postImageStorage;
@@ -106,6 +108,39 @@ public class BuskingService {
      * @return 버스킹 프로필 조회 결과 VO
      */
     public BuskingProfileResultVo profile(final Long buskingId) {
-        return buskingMapper.profile(buskingId).orElseThrow(() -> new BuskingProfileNotFoundException(buskingId));
+        return buskingMapper.profile(buskingId).orElseThrow(BuskingProfileNotFoundException::new);
+    }
+
+    /**
+     * 버스킹 정보 업데이트
+     *
+     * @param vo 버스킹 업데이트에 필요한 정보 Vo
+     * @return 변경된 버스킹 ID
+     */
+    @Transactional
+    public Long update(final BuskingUpdateVo vo) {
+        final BuskingUpdateModelVo modelVo = BuskingUpdateModelVo.of(
+                vo.buskingId(),
+                vo.latitude(),
+                vo.longitude(),
+                vo.title(),
+                vo.description(),
+                vo.managedStartTime(),
+                vo.managedEndTime(),
+                vo.keywords());
+
+        return buskingDao.updateBusking(modelVo);
+    }
+
+    /**
+     * 해당 유저가 버스킹을 만들었는지 확인해요.
+     *
+     * @param buskingId 버스킹 ID
+     * @param userId 유저 ID
+     */
+    public void validateBuskingMadeByUser(final Long buskingId, final Long userId) {
+        if (!buskingMapper.isBuskingMadeByUser(buskingId, userId)) {
+           throw new MismatchedPostAndUserException();
+        }
     }
 }

@@ -14,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * DAO for Busking CUD.
@@ -115,7 +114,7 @@ public class BuskingDao {
      * @return 변경된 버스킹 ID
      */
     public Long updateBusking(final BuskingUpdateModelVo vo) {
-        Busking busking = vo.busking();
+        final Busking busking = buskingRepository.getById(vo.buskingId());
         busking.update(vo.latitude(), vo.longitude(), vo.title(), vo.description(), vo.managedStartTime(), vo.managedEndTime());
 
         saveBusking(busking);
