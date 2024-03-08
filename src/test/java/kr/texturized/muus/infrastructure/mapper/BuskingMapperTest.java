@@ -32,7 +32,8 @@ class BuskingMapperTest extends IntegrationTest {
     @Autowired
     private BuskingMapper buskingMapper;
 
-    private User saveUser = null;
+    private User saveUser1 = null;
+    private User saveUser2 = null;
 
     private Long buskingId1 = 0L;
     private final Double latitude1 = 27.00001;
@@ -52,15 +53,22 @@ class BuskingMapperTest extends IntegrationTest {
 
     @BeforeEach
     void beforeEach() {
-        saveUser = userRepository.save(User.builder()
+        saveUser1 = userRepository.save(User.builder()
                 .accountId("redgem92")
                 .password("asdfqwerzxcv")
                 .nickname("HoneyFist")
                 .userType(UserTypeEnum.USER)
-            .build());
+                .build());
+
+        saveUser2 = userRepository.save(User.builder()
+                .accountId("redgem920")
+                .password("asdfqwerzxcv")
+                .nickname("HoneyFist2")
+                .userType(UserTypeEnum.USER)
+                .build());
 
         buskingId1 = saveBusking(
-                saveUser,
+                saveUser1,
                 latitude1, longitude1,
                 managedStartTime1,
                 managedEndTime1,
@@ -68,7 +76,7 @@ class BuskingMapperTest extends IntegrationTest {
                 imagePaths1
         );
         buskingId2 = saveBusking(
-                saveUser,
+                saveUser1,
                 latitude2, longitude2,
                 managedStartTime2,
                 managedEndTime2,
@@ -119,8 +127,8 @@ class BuskingMapperTest extends IntegrationTest {
     @Test
     void getBuskingProfile() {
         final BuskingProfileResultVo vo1 = buskingMapper.profile(buskingId1).get();
-        assertThat(vo1.getUserId()).isEqualTo(saveUser.getId());
-        assertThat(vo1.getNickname()).isEqualTo(saveUser.getNickname());
+        assertThat(vo1.getUserId()).isEqualTo(saveUser1.getId());
+        assertThat(vo1.getNickname()).isEqualTo(saveUser1.getNickname());
         assertThat(vo1.getProfileImagePath()).isNullOrEmpty();
         assertThat(vo1.getLatitude()).isEqualTo(latitude1);
         assertThat(vo1.getLongitude()).isEqualTo(longitude1);
@@ -133,8 +141,8 @@ class BuskingMapperTest extends IntegrationTest {
         assertThat(vo1.getImagePaths()).isEqualTo(imagePaths1);
 
         final BuskingProfileResultVo vo2 = buskingMapper.profile(buskingId2).get();
-        assertThat(vo2.getUserId()).isEqualTo(saveUser.getId());
-        assertThat(vo2.getNickname()).isEqualTo(saveUser.getNickname());
+        assertThat(vo2.getUserId()).isEqualTo(saveUser1.getId());
+        assertThat(vo2.getNickname()).isEqualTo(saveUser1.getNickname());
         assertThat(vo2.getProfileImagePath()).isNullOrEmpty();
         assertThat(vo2.getLatitude()).isEqualTo(latitude2);
         assertThat(vo2.getLongitude()).isEqualTo(longitude2);
@@ -146,4 +154,29 @@ class BuskingMapperTest extends IntegrationTest {
         vo2.getKeywords().forEach(keyword -> assertThat(keyword).isIn(keyword2));
         assertThat(vo2.getImagePaths()).isEqualTo(imagePaths2);
     }
+
+    @Test
+    void validateBuskingAndUser() {
+        assertThat(buskingMapper.isBuskingMadeByUser(buskingId1, saveUser1.getId())).isTrue();
+        assertThat(buskingMapper.isBuskingMadeByUser(buskingId2, saveUser1.getId())).isTrue();
+    }
+
+    @Test
+    void validateWithUnknownUserThenReturnFalse() {
+        assertThat(buskingMapper.isBuskingMadeByUser(buskingId1, -1L)).isFalse();
+        assertThat(buskingMapper.isBuskingMadeByUser(buskingId2, 1_000_000_000L)).isFalse();
+    }
+
+    @Test
+    void validateWithBuskingNotOwnedThenReturnFalse() {
+        assertThat(buskingMapper.isBuskingMadeByUser(buskingId1 + 10L, saveUser1.getId())).isFalse();
+        assertThat(buskingMapper.isBuskingMadeByUser(buskingId2 + 4_000L, saveUser1.getId())).isFalse();
+    }
+
+    @Test
+    void validateUserNotMadeBuskingReturnFalse() {
+        assertThat(buskingMapper.isBuskingMadeByUser(buskingId1, saveUser2.getId())).isFalse();
+        assertThat(buskingMapper.isBuskingMadeByUser(buskingId2, saveUser2.getId())).isFalse();
+    }
+
 }

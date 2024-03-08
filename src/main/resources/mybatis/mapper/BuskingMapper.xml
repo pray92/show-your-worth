@@ -2,6 +2,35 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="kr.texturized.muus.infrastructure.mapper.BuskingMapper">
+  <resultMap id="Busking" type="kr.texturized.muus.domain.entity.Busking">
+    <constructor>
+      <idArg column="id" javaType="Long" />
+      <arg column="latitude" javaType="Double" />
+      <arg column="longitude" javaType="Double" />
+      <arg column="title" javaType="String" />
+      <arg column="description" javaType="String" />
+      <arg column="managed_start_time" javaType="java.time.LocalDateTime" />
+      <arg column="managed_end_time" javaType="java.time.LocalDateTime" />
+      <arg column="end_time" javaType="java.time.LocalDateTime" />
+    </constructor>
+  </resultMap>
+  <select id="findById" resultMap="Busking">
+    SELECT
+      id,
+      latitude,
+      latitude,
+      longitude,
+      title,
+      description,
+      managed_start_time,
+      managed_end_time,
+      end_time
+    FROM
+      busking
+    WHERE
+      id = #{buskingId}
+  </select>
+
   <resultMap id="BuskingSearchResultVo" type="kr.texturized.muus.domain.vo.BuskingSearchResultVo">
     <constructor>
       <idArg column="id" javaType="Long" />
@@ -68,5 +97,19 @@
       b.id = #{buskingId}
     ORDER BY
       i.upload_order ASC
+  </select>
+
+  <select id="isBuskingMadeByUser" resultType="boolean">
+    SELECT EXISTS (
+      SELECT
+        b.id
+      FROM
+        busking b
+        LEFT JOIN users u ON b.host_id = u.id
+      WHERE
+        1 = 1
+        AND b.id = #{buskingId}
+        AND u.id = #{userId}
+    );
   </select>
 </mapper>

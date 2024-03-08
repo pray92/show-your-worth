@@ -25,10 +25,10 @@ public interface BuskingMapper {
      * @return List of Busking, just id and coordinate
      */
     List<BuskingSearchResultVo> search(
-            @Param("latitude") double latitude,
-            @Param("longitude") double longitude,
-            @Param("width") double width,
-            @Param("height") double height
+            @Param("latitude") Double latitude,
+            @Param("longitude") Double longitude,
+            @Param("width") Double width,
+            @Param("height") Double height
     );
 
     /**
@@ -38,4 +38,13 @@ public interface BuskingMapper {
      * @return 호스팅 유저의 정보와 버스킹 프로필 정보 Vo
      */
     Optional<BuskingProfileResultVo> profile(Long buskingId);
+
+    /**
+     * 해당 유저가 해당 버스킹을 생성했는지 확인해요.
+     *
+     * @param buskingId 버스킹 ID
+     * @param accountId 유저 계정
+     * @return 해당 유저가 버스킹을 생성했는지 여부
+     */
+    boolean isBuskingMadeByUser(@Param("buskingId") Long buskingId, @Param("userId") Long accountId);
 }
