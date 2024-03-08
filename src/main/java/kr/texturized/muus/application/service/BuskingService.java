@@ -136,10 +136,10 @@ public class BuskingService {
      * 해당 유저가 버스킹을 만들었는지 확인해요.
      *
      * @param buskingId 버스킹 ID
-     * @param userId 유저 ID
+     * @param accountId 유저 계정
      */
-    public void validateBuskingMadeByUser(final Long buskingId, final Long userId) {
-        if (!buskingMapper.isBuskingMadeByUser(buskingId, userId)) {
+    public void validateBuskingMadeByUser(final Long buskingId, final String accountId) {
+        if (!buskingMapper.isBuskingMadeByUser(buskingId, accountId)) {
            throw new MismatchedPostAndUserException();
         }
     }

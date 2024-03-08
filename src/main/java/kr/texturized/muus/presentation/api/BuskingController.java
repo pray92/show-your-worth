@@ -4,6 +4,8 @@ import java.util.List;
 import javax.validation.Valid;
 import kr.texturized.muus.application.service.BuskingService;
 import kr.texturized.muus.common.coordinate.RangeChecker;
+import kr.texturized.muus.common.util.SignInCheck;
+import kr.texturized.muus.domain.entity.UserTypeEnum;
 import kr.texturized.muus.domain.vo.BuskingProfileResultVo;
 import kr.texturized.muus.domain.vo.BuskingSearchResultVo;
 import kr.texturized.muus.domain.vo.BuskingSearchVo;
@@ -86,4 +88,5 @@ public class BuskingController {
 
         return ResponseEntity.status(HttpStatus.OK).body(BuskingProfileResponse.of(resultVo));
     }
+
 }

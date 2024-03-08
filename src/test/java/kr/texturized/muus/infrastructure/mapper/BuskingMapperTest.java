@@ -157,26 +157,26 @@ class BuskingMapperTest extends IntegrationTest {
 
     @Test
     void validateBuskingAndUser() {
-        assertThat(buskingMapper.isBuskingMadeByUser(buskingId1, saveUser1.getId())).isTrue();
-        assertThat(buskingMapper.isBuskingMadeByUser(buskingId2, saveUser1.getId())).isTrue();
+        assertThat(buskingMapper.isBuskingMadeByUser(buskingId1, saveUser1.getAccountId())).isTrue();
+        assertThat(buskingMapper.isBuskingMadeByUser(buskingId2, saveUser1.getAccountId())).isTrue();
     }
 
     @Test
     void validateWithUnknownUserThenReturnFalse() {
-        assertThat(buskingMapper.isBuskingMadeByUser(buskingId1, -1L)).isFalse();
-        assertThat(buskingMapper.isBuskingMadeByUser(buskingId2, 1_000_000_000L)).isFalse();
+        assertThat(buskingMapper.isBuskingMadeByUser(buskingId1, "unknown-user")).isFalse();
+        assertThat(buskingMapper.isBuskingMadeByUser(buskingId2, "unknown-user")).isFalse();
     }
 
     @Test
     void validateWithBuskingNotOwnedThenReturnFalse() {
-        assertThat(buskingMapper.isBuskingMadeByUser(buskingId1 + 10L, saveUser1.getId())).isFalse();
-        assertThat(buskingMapper.isBuskingMadeByUser(buskingId2 + 4_000L, saveUser1.getId())).isFalse();
+        assertThat(buskingMapper.isBuskingMadeByUser(buskingId1 + 10L, saveUser1.getAccountId())).isFalse();
+        assertThat(buskingMapper.isBuskingMadeByUser(buskingId2 + 4_000L, saveUser1.getAccountId())).isFalse();
     }
 
     @Test
     void validateUserNotMadeBuskingReturnFalse() {
-        assertThat(buskingMapper.isBuskingMadeByUser(buskingId1, saveUser2.getId())).isFalse();
-        assertThat(buskingMapper.isBuskingMadeByUser(buskingId2, saveUser2.getId())).isFalse();
+        assertThat(buskingMapper.isBuskingMadeByUser(buskingId1, saveUser2.getAccountId())).isFalse();
+        assertThat(buskingMapper.isBuskingMadeByUser(buskingId2, saveUser2.getAccountId())).isFalse();
     }
 
 }

@@ -46,5 +46,5 @@ public interface BuskingMapper {
      * @param accountId 유저 계정
      * @return 해당 유저가 버스킹을 생성했는지 여부
      */
-    boolean isBuskingMadeByUser(@Param("buskingId") Long buskingId, @Param("userId") Long accountId);
+    boolean isBuskingMadeByUser(@Param("buskingId") Long buskingId, @Param("accountId") String accountId);
 }
