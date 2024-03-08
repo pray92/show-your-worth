@@ -30,7 +30,7 @@ public enum ErrorCode {
     // Busking
     COORDINATE_IS_OUT_OF_RANGE(400, "C201", " Out of Range for Searching"),
     BUSKING_PROFILE_NOT_FOUND(400, "C202", "Failed to load busking profile"),
-    MISMATCHED_POST_AND_USER(403, "C203", "User is not authorized to handle this post")
+    MISMATCHED_POST_AND_USER(401, "C203", "User is not authorized to handle this post")
 
 
     ;
