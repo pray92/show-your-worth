@@ -1,9 +1,13 @@
 package kr.texturized.muus.domain.vo;
 
+import kr.texturized.muus.presentation.api.request.BuskingUpdateRequest;
+
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 
+/**
+ * 버스킹 업데이트 Vo
+ */
 public record BuskingUpdateVo(
         Long buskingId,
         Double latitude,
@@ -15,25 +19,16 @@ public record BuskingUpdateVo(
         List<String> keywords
 ) {
 
-    public static BuskingUpdateVo of(
-            final Long buskingId,
-            final Double latitude,
-            final Double longitude,
-            final String title,
-            final String description,
-            final LocalDateTime managedStartTime,
-            final LocalDateTime managedEndTime,
-            final String[] keywords
-    ) {
+    public static BuskingUpdateVo of(final Long buskingId, final BuskingUpdateRequest request) {
         return new BuskingUpdateVo(
                 buskingId,
-                latitude,
-                longitude,
-                title,
-                description,
-                managedStartTime,
-                managedEndTime,
-                Arrays.asList(keywords)
+                request.latitude(),
+                request.longitude(),
+                request.title(),
+                request.description(),
+                request.managedStartTime(),
+                request.managedEndTime(),
+                request.keywords()
         );
     }
 }

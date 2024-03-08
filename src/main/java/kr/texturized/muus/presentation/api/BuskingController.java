@@ -2,16 +2,16 @@ package kr.texturized.muus.presentation.api;
 
 import java.util.List;
 import javax.validation.Valid;
+
+import kr.texturized.muus.application.UserSignFacade;
 import kr.texturized.muus.application.service.BuskingService;
 import kr.texturized.muus.common.coordinate.RangeChecker;
 import kr.texturized.muus.common.util.SignInCheck;
 import kr.texturized.muus.domain.entity.UserTypeEnum;
-import kr.texturized.muus.domain.vo.BuskingProfileResultVo;
-import kr.texturized.muus.domain.vo.BuskingSearchResultVo;
-import kr.texturized.muus.domain.vo.BuskingSearchVo;
-import kr.texturized.muus.domain.vo.BuskingCreateVo;
+import kr.texturized.muus.domain.vo.*;
 import kr.texturized.muus.presentation.api.request.BuskingCreateRequest;
 import kr.texturized.muus.presentation.api.request.BuskingSearchRequest;
+import kr.texturized.muus.presentation.api.request.BuskingUpdateRequest;
 import kr.texturized.muus.presentation.api.response.BuskingProfileResponse;
 import kr.texturized.muus.presentation.api.response.BuskingSearchResponse;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +27,8 @@ public class BuskingController {
 
     private final RangeChecker rangeChecker;
     private final BuskingService buskingService;
+
+    private final UserSignFacade userSignFacade;
 
     /**
      * Create Busking Post.<br>
@@ -89,4 +91,26 @@ public class BuskingController {
         return ResponseEntity.status(HttpStatus.OK).body(BuskingProfileResponse.of(resultVo));
     }
 
+    /**
+     * 버스킹 업데이트
+     *
+     * @param buskingId 업데이트할 버스킹 ID
+     * @param request 버스킹 업데이트 요청 파라미터
+     * @return 업데이트된 버스킹 ID
+     */
+    @PutMapping("/{buskingId}")
+    @SignInCheck(userType = {UserTypeEnum.USER, UserTypeEnum.ADMIN})
+    public ResponseEntity<Long> update(
+            @PathVariable final Long buskingId,
+            @RequestBody final BuskingUpdateRequest request
+    ) {
+        final String accountId = userSignFacade.getCurrentAccountId();
+
+        rangeChecker.validateRange(request.latitude(), request.longitude(), 0.0, 0.0);
+        buskingService.validateBuskingMadeByUser(buskingId, accountId);
+
+        final Long updatedBuskingId = buskingService.update(BuskingUpdateVo.of(buskingId, request));
+
+        return ResponseEntity.status(HttpStatus.OK).body(updatedBuskingId);
+    }
 }
