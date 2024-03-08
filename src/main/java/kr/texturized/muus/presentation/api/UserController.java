@@ -25,7 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
  * Rest Controller for User.
  */
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserController {
 
