@@ -1,18 +1,11 @@
 package kr.texturized.muus.domain.entity;
 
 import java.time.LocalDateTime;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.Future;
 import javax.validation.constraints.FutureOrPresent;
+import javax.validation.constraints.PastOrPresent;
+
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -30,7 +23,7 @@ public class Busking {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "host_id", nullable = false, updatable = false)
     private User host;
 
@@ -56,8 +49,7 @@ public class Busking {
     @Column(nullable = false)
     private LocalDateTime createTime;
 
-    @Future
-    @Column(name = "end_time")
+    @PastOrPresent
     private LocalDateTime endTime;
 
     /**
@@ -100,7 +92,13 @@ public class Busking {
         this.managedEndTime = managedEndTime;
     }
 
-    public void end() {
+    public void startNow() {
+        // now() 사용 시 초기화 하는 과저에서 시간이 지나 '과거'가 됨
+        // 플러시 되는 텀을 고려해 1초 추가
+        this.managedStartTime = LocalDateTime.now().plusSeconds(1L);
+    }
+
+    public void endNow() {
         this.endTime = LocalDateTime.now();
     }
 

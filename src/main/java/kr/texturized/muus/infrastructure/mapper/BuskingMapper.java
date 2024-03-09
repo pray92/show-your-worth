@@ -47,4 +47,16 @@ public interface BuskingMapper {
      * @return 해당 유저가 버스킹을 생성했는지 여부
      */
     boolean isBuskingMadeByUser(@Param("buskingId") Long buskingId, @Param("accountId") String accountId);
+
+    /**
+     * 해당 계정이 현재 버스킹을 만들 수 있는지 확인해요.
+     *
+     * 조건:
+     * 1. 이미 생성해서 시작 대기 상태인 버스킹이 없어야 함
+     * 2. 이미 생성해서 시작 중인 버스킹이 없어야 함
+     *
+     * @param accountId 유저 계정
+     * @return 해당 계정 버스킹 생성 가능 여부
+     */
+    boolean isUserEnableToMakeBusking(String accountId);
 }

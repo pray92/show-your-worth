@@ -67,7 +67,6 @@ public class BuskingService {
         return buskingDao.create(modelVo);
     }
 
-
     /**
      * Upload and return successfully uploaded image's path.
      *
