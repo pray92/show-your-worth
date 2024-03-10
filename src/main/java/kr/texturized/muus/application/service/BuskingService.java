@@ -2,6 +2,7 @@ package kr.texturized.muus.application.service;
 
 import java.util.List;
 
+import kr.texturized.muus.application.service.exception.AlreadyBuskingCreatedException;
 import kr.texturized.muus.application.service.exception.InvalidAccountException;
 import kr.texturized.muus.application.service.exception.MismatchedPostAndUserException;
 import kr.texturized.muus.common.coordinate.CoordinateCalculator;
@@ -135,6 +136,17 @@ public class BuskingService {
     @Transactional
     public void delete(final Long buskingId) {
         buskingDao.delete(buskingId);
+    }
+
+    /**
+     * 해당 유저의 버스킹 생성 가능 여부를 판단해요.
+     *
+     * @param accountId 버스킹 생성하려는 유저 계정
+     */
+    public void validateUserEnableToMakeBusking(final String accountId) {
+        if(!buskingMapper.isUserEnableToMakeBusking(accountId)) {
+            throw new AlreadyBuskingCreatedException();
+        }
     }
 
     /**

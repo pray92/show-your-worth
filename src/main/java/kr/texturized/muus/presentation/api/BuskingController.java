@@ -55,6 +55,7 @@ public class BuskingController {
     ) {
         final String accountId = userSignFacade.getCurrentAccountId();
 
+        buskingService.validateUserEnableToMakeBusking(accountId);
         rangeChecker.validateRange(request.latitude(), request.longitude(), 0.0, 0.0);
 
         final BuskingCreateVo vo = BuskingCreateVo.of(accountId, request, imageFiles);

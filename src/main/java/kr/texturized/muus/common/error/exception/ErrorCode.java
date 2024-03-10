@@ -26,12 +26,13 @@ public enum ErrorCode {
     INVALID_ACCOUNT(401, "C104", " Wrong Account Information"),
     FAILED_TO_SIGNIN(401, "C105", " Failed To Sign-in"),
     FAILED_TO_SIGNOUT(401, "C106", " Failed To Sign-out"),
+    ALREADY_BUSKING_CREATION(400, "C107", " User already has ready or activated busking."),
 
     // Busking
     COORDINATE_IS_OUT_OF_RANGE(400, "C201", " Out of Range for Searching"),
     BUSKING_PROFILE_NOT_FOUND(400, "C202", "Failed to load busking profile"),
-    MISMATCHED_POST_AND_USER(401, "C203", "User is not authorized to handle this post")
 
+    MISMATCHED_POST_AND_USER(401, "C203", "User is not authorized to handle this post")
 
     ;
 

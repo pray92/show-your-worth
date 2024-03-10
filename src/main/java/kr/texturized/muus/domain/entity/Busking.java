@@ -23,7 +23,7 @@ public class Busking {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "host_id", nullable = false, updatable = false)
     private User host;
 

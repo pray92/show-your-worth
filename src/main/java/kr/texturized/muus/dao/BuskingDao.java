@@ -125,6 +125,36 @@ public class BuskingDao {
     }
 
     /**
+     * 버스킹을 즉시 시작해요.
+     *
+     * @param buskingId 즉시 시작할 버스킹 ID
+     * @return 즉시 시작된 버스킹 ID
+     */
+    public Long startNow(final Long buskingId) {
+        Busking busking = buskingRepository.getById(buskingId);
+        busking.startNow();
+
+        log.info("Busking is started now[{}]", busking.getId());
+
+        return busking.getId();
+    }
+
+    /**
+     * 버스킹을 즉시 종료해요.
+     *
+     * @param buskingId 즉시 종료할 버스킹 ID
+     * @return 즉시 종료된 버스킹 ID
+     */
+    public Long endNow(final Long buskingId) {
+        Busking busking = buskingRepository.getById(buskingId);
+        busking.endNow();
+
+        log.info("Busking is ended now[{}]", busking.getId());
+
+        return busking.getId();
+    }
+
+    /**
      * 해당 버스킹에 대한 정보를 모두 삭제해요.
      *
      * @param buskingId 삭제하려는 버스킹 ID
