@@ -59,4 +59,27 @@ public interface BuskingMapper {
      * @return 해당 계정 버스킹 생성 가능 여부
      */
     boolean isUserEnableToMakeBusking(String accountId);
+
+    /**
+     * 해당 버스킹이 즉시 시작 가능한지 확인해요.
+     *
+     * 조건:
+     * 1. 시작 대기 중
+     *
+     * @param buskingId 버스킹 ID
+     * @return 즉시 시작 가능 여부
+     */
+    boolean isBuskingMayStartNow(Long buskingId);
+
+    /**
+     * 해당 버스킹이 즉시 종료가 가능한지 확인해요.
+     *
+     * 조건:
+     * 1. 시작 중
+     * 2. 종료가 안된 버스킹
+     *
+     * @param buskingId 버스킹 ID
+     * @return 즉시 종료 가능 여부
+     */
+    boolean isBuskingMayEndNow(Long buskingId);
 }

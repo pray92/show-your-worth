@@ -116,6 +116,42 @@ public class BuskingController {
         return ResponseEntity.status(HttpStatus.OK).body(updatedBuskingId);
     }
 
+    /**
+     * 버스킹을 즉시 시작해요.
+     *
+     * @param buskingId 즉시 시작할 버스킹 ID
+     * @return 버스킹 ID
+     */
+    @PatchMapping("/start/{buskingId}")
+    public ResponseEntity<Long> startNow(@PathVariable final Long buskingId) {
+        final String accountId = userSignFacade.getCurrentAccountId();
+
+        buskingService.validateBuskingMadeByUser(buskingId, accountId);
+        buskingService.validateBuskingMayStartNow(buskingId);
+
+        final Long startedBuskingId = buskingService.startNow(buskingId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(startedBuskingId);
+    }
+
+    /**
+     * 버스킹을 즉시 종료해요.
+     *
+     * @param buskingId 즉시 시작할 버스킹 ID
+     * @return 버스킹 ID
+     */
+    @PatchMapping("/end/{buskingId}")
+    public ResponseEntity<Long> endNow(@PathVariable final Long buskingId) {
+        final String accountId = userSignFacade.getCurrentAccountId();
+
+        buskingService.validateBuskingMadeByUser(buskingId, accountId);
+        buskingService.validateBuskingMayEndNow(buskingId);
+
+        final Long endedBuskingId = buskingService.endNow(buskingId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(endedBuskingId);
+    }
+
     @DeleteMapping("/{buskingId}")
     @SignInCheck(userType = {UserTypeEnum.USER, UserTypeEnum.ADMIN})
     public ResponseEntity<String> delete(@PathVariable final Long buskingId) {

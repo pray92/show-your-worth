@@ -2,14 +2,11 @@ package kr.texturized.muus.application.service;
 
 import java.util.List;
 
-import kr.texturized.muus.application.service.exception.AlreadyBuskingCreatedException;
-import kr.texturized.muus.application.service.exception.InvalidAccountException;
-import kr.texturized.muus.application.service.exception.MismatchedPostAndUserException;
+import kr.texturized.muus.application.service.exception.*;
 import kr.texturized.muus.common.coordinate.CoordinateCalculator;
 import kr.texturized.muus.common.storage.PostImageStorage;
 import kr.texturized.muus.dao.BuskingDao;
 import kr.texturized.muus.domain.entity.*;
-import kr.texturized.muus.application.service.exception.BuskingProfileNotFoundException;
 import kr.texturized.muus.domain.vo.*;
 import kr.texturized.muus.infrastructure.mapper.BuskingMapper;
 import kr.texturized.muus.infrastructure.mapper.UserMapper;
@@ -133,6 +130,29 @@ public class BuskingService {
         return buskingDao.update(modelVo);
     }
 
+    /**
+     * 버스킹을 즉시 시작해요.
+     *
+     * @param buskingId 즉시 시작할 버스킹 ID
+     * @return 즉시 시작된 버스킹 ID
+     */
+    @Transactional
+    public Long startNow(final Long buskingId) {
+        return buskingDao.startNow(buskingId);
+    }
+
+    /**
+     * 버스킹을 즉시 종료해요.
+     *
+     * @param buskingId 즉시 종료할 버스킹 ID
+     * @return 즉시 종료된 버스킹 ID
+     */
+    @Transactional
+    public Long endNow(final Long buskingId) {
+        return buskingDao.endNow(buskingId);
+    }
+
+
     @Transactional
     public void delete(final Long buskingId) {
         buskingDao.delete(buskingId);
@@ -158,6 +178,28 @@ public class BuskingService {
     public void validateBuskingMadeByUser(final Long buskingId, final String accountId) {
         if (!buskingMapper.isBuskingMadeByUser(buskingId, accountId)) {
            throw new MismatchedPostAndUserException();
+        }
+    }
+
+    /**
+     * 해당 버스킹이 즉시 시작 가능한지 확인해요.
+     *
+     * @param buskingId 버스킹 ID
+     */
+    public void validateBuskingMayStartNow(final Long buskingId) {
+        if (!buskingMapper.isBuskingMayStartNow(buskingId)) {
+            throw new DisabledToStartBuskingNowException();
+        }
+    }
+
+    /**
+     * 해당 버스킹이 즉시 종료가 가능한지 확인해요.
+     *
+     * @param buskingId 버스킹 ID
+     */
+    public void validateBuskingMayEndNow(final long buskingId) {
+        if (!buskingMapper.isBuskingMayEndNow(buskingId)) {
+           throw new DisabledToEndBuskingNowException();
         }
     }
 }
