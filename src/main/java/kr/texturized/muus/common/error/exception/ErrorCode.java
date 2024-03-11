@@ -26,14 +26,18 @@ public enum ErrorCode {
     INVALID_ACCOUNT(401, "C104", " Wrong Account Information"),
     FAILED_TO_SIGNIN(401, "C105", " Failed To Sign-in"),
     FAILED_TO_SIGNOUT(401, "C106", " Failed To Sign-out"),
+    ALREADY_BUSKING_CREATION(400, "C107", " User already has ready or activated busking."),
+    DISABLE_TO_START_BUSKING_NOW(400, "C108", "이미 시작된 버스킹이에요."),
+    DISABLE_TO_END_BUSKING_NOW(400, "C109", "아직 시작안했거나 종료된 버스킹이에요."),
 
     // Busking
     COORDINATE_IS_OUT_OF_RANGE(400, "C201", " Out of Range for Searching"),
     BUSKING_PROFILE_NOT_FOUND(400, "C202", "Failed to load busking profile"),
-    MISMATCHED_POST_AND_USER(401, "C203", "User is not authorized to handle this post")
 
+    MISMATCHED_POST_AND_USER(401, "C203", "User is not authorized to handle this post"),
 
     ;
+
 
     private final int status;
     private final String code;

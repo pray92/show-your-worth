@@ -55,6 +55,7 @@ public class BuskingController {
     ) {
         final String accountId = userSignFacade.getCurrentAccountId();
 
+        buskingService.validateUserEnableToMakeBusking(accountId);
         rangeChecker.validateRange(request.latitude(), request.longitude(), 0.0, 0.0);
 
         final BuskingCreateVo vo = BuskingCreateVo.of(accountId, request, imageFiles);
@@ -113,6 +114,42 @@ public class BuskingController {
         final Long updatedBuskingId = buskingService.update(BuskingUpdateVo.of(buskingId, request));
 
         return ResponseEntity.status(HttpStatus.OK).body(updatedBuskingId);
+    }
+
+    /**
+     * 버스킹을 즉시 시작해요.
+     *
+     * @param buskingId 즉시 시작할 버스킹 ID
+     * @return 버스킹 ID
+     */
+    @PatchMapping("/start/{buskingId}")
+    public ResponseEntity<Long> startNow(@PathVariable final Long buskingId) {
+        final String accountId = userSignFacade.getCurrentAccountId();
+
+        buskingService.validateBuskingMadeByUser(buskingId, accountId);
+        buskingService.validateBuskingMayStartNow(buskingId);
+
+        final Long startedBuskingId = buskingService.startNow(buskingId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(startedBuskingId);
+    }
+
+    /**
+     * 버스킹을 즉시 종료해요.
+     *
+     * @param buskingId 즉시 시작할 버스킹 ID
+     * @return 버스킹 ID
+     */
+    @PatchMapping("/end/{buskingId}")
+    public ResponseEntity<Long> endNow(@PathVariable final Long buskingId) {
+        final String accountId = userSignFacade.getCurrentAccountId();
+
+        buskingService.validateBuskingMadeByUser(buskingId, accountId);
+        buskingService.validateBuskingMayEndNow(buskingId);
+
+        final Long endedBuskingId = buskingService.endNow(buskingId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(endedBuskingId);
     }
 
     @DeleteMapping("/{buskingId}")

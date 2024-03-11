@@ -105,11 +105,52 @@
         b.id
       FROM
         busking b
-        LEFT JOIN users u ON b.host_id = u.id
+          LEFT JOIN users u ON b.host_id = u.id
       WHERE
         1 = 1
         AND b.id = #{buskingId}
         AND u.account_id = #{accountId}
+    );
+  </select>
+
+  <select id="isUserEnableToMakeBusking" resultType="boolean">
+    SELECT NOT EXISTS (
+    SELECT
+    b.id
+    FROM
+    busking b
+    LEFT JOIN users u ON b.host_id = u.id
+    WHERE
+    1 = 1
+    AND u.account_id = #{accountId}
+    AND b.end_time IS NULL
+    );
+  </select>
+
+  <select id="isBuskingMayStartNow" resultType="boolean">
+    SELECT EXISTS (
+      SELECT
+        b.id
+      FROM
+        busking b
+      WHERE
+        1 = 1
+        AND b.id = #{buskingId}
+        AND b.managed_start_time > NOW()
+    );
+  </select>
+
+  <select id="isBuskingMayEndNow" resultType="boolean">
+    SELECT EXISTS (
+      SELECT
+        b.id
+      FROM
+        busking b
+      WHERE
+        1 = 1
+        AND b.id = #{buskingId}
+        AND NOW() > b.managed_start_time
+        AND b.end_time IS NULL
     );
   </select>
 </mapper>

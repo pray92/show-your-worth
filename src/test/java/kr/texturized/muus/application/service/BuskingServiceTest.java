@@ -1,10 +1,14 @@
 package kr.texturized.muus.application.service;
 
+import kr.texturized.muus.application.service.exception.DisabledToEndBuskingNowException;
+import kr.texturized.muus.application.service.exception.DisabledToStartBuskingNowException;
+import kr.texturized.muus.domain.entity.Busking;
 import kr.texturized.muus.domain.entity.User;
 import kr.texturized.muus.domain.entity.UserTypeEnum;
 import kr.texturized.muus.application.service.exception.BuskingProfileNotFoundException;
 import kr.texturized.muus.domain.vo.BuskingCreateVo;
 import kr.texturized.muus.domain.vo.BuskingProfileResultVo;
+import kr.texturized.muus.infrastructure.repository.BuskingRepository;
 import kr.texturized.muus.infrastructure.repository.UserRepository;
 import kr.texturized.muus.test.IntegrationTest;
 import org.junit.jupiter.api.Assertions;
@@ -12,6 +16,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -25,6 +30,12 @@ public class BuskingServiceTest extends IntegrationTest {
 
     @Autowired
     private BuskingService buskingService;
+
+    @Autowired
+    private BuskingRepository buskingRepository;
+
+    @Autowired
+    private EntityManager em;
 
     private Long buskingId;
 
@@ -60,5 +71,48 @@ public class BuskingServiceTest extends IntegrationTest {
         Assertions.assertThrows(BuskingProfileNotFoundException.class, () -> {
             BuskingProfileResultVo vo = buskingService.profile(-1L);
         });
+    }
+
+    @Test
+    void alreadyStartedBuskingThenMayNotStartNow() throws InterruptedException {
+        Busking busking = buskingRepository.getById(buskingId);
+        busking.startNow();
+
+        em.flush();
+        Thread.sleep(1100);
+
+        Assertions.assertThrows(DisabledToStartBuskingNowException.class, () -> buskingService.validateBuskingMayStartNow(buskingId));
+    }
+
+    @Test
+    void readyToStartBuskingThenMayStartNow() {
+        buskingService.validateBuskingMayStartNow(buskingId);
+    }
+
+    @Test
+    void notStartedYetBuskingThenMayNotEndNow() {
+        Assertions.assertThrows(DisabledToEndBuskingNowException.class, () -> buskingService.validateBuskingMayEndNow(buskingId));
+    }
+
+    @Test
+    void alreadyEndedBuskingThenMayNotEndNow() throws InterruptedException {
+        Busking busking = buskingRepository.getById(buskingId);
+        busking.endNow();
+
+        em.flush();
+        Thread.sleep(1100);
+
+        Assertions.assertThrows(DisabledToEndBuskingNowException.class, () -> buskingService.validateBuskingMayEndNow(buskingId));
+    }
+
+    @Test
+    void startedBuskingThenMayEndNow() throws InterruptedException {
+        Busking busking = buskingRepository.getById(buskingId);
+        busking.startNow();
+
+        em.flush();
+        Thread.sleep(1100);
+
+        buskingService.validateBuskingMayEndNow(buskingId);
     }
 }
